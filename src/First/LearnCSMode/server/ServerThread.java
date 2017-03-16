@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import common.Message;
+import First.LearnCSMode.Message;
 
 public class ServerThread extends Thread{
 	private ServerSocket srv_socket;

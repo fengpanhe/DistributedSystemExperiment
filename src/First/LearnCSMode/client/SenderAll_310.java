@@ -1,5 +1,7 @@
 package First.LearnCSMode.client;
 
+import First.LearnCSMode.Message;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
@@ -20,23 +22,24 @@ public class SenderAll_310 {
         System.out.print("请输入超时阀植： ");
         int limitTime = in.nextInt();
         System.out.print("请输入第一个接受者的ip： ");
-        String ip1= in.nextLine();
+        String ip1= in.next();
         System.out.print("请输入第二个接受者的ip： ");
-        String ip2= in.nextLine();
+        String ip2= in.next();
         test.eventCreator(random,limitTime,ip1,ip2);
     }
 
     public void eventCreator(int seed,int limitTime,String ip1,String ip2){
         Random random = new Random(seed);
+        Message message = new Message();
         int counterOne = 0,counterZero = 0;
+        int random1 = 0,random2 = 0;
 
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
-        System.out.println("广播模式-send");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Formatter f = new Formatter(System.out);
         long startTime=System.currentTimeMillis();   //获取开始时间
 
-        Formatter f = new Formatter(System.out);
+        System.out.println("广播模式-send");
         f.format("%-9s %-10s %-10s %-19s\n", "NO", "random1", "random2", "timer");
-        int random1;
         for(int i = 0; i < 20; i ++) {
             double R = random.nextDouble();
             double T = (-6) * Math.log(R) * 1000;
@@ -45,6 +48,9 @@ public class SenderAll_310 {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            /*
+            **random1的生成
+             */
             if (counterZero == 15) {
                 random1 = 1;
                 counterOne++;
@@ -60,10 +66,38 @@ public class SenderAll_310 {
                     counterZero++;
                 }
             }
-            f.format("%-10d %-10d %-20s %-10d \n",i,random1,df.format(new Date()),(int)T);
+            if(System.currentTimeMillis()-startTime>limitTime){
+                random1 = 2;
+            }
+            /**
+             * random2的生成
+             */
+            switch (random1){
+                case 1:
+                    random2 = random.nextInt(5) + 1;
+                    break;
+                case 0:
+                    random2 = random.nextInt(100) + 101;
+                    break;
+                case 2:
+                    random2 = 0;
+                    break;
+                default:
+                    random2 = -1;
+                    System.out.println("random1 is not 1/2/0");
+            }
+            f.format("%-10d %-10d %-10d %-20s \n",i + 1,random1,random2,df.format(new Date()));
+            message.setRandom1(random1);
+            message.setRandom2(random2);
+            message.setTimer(df.format(new Date()));
+
+            if(random1 == 2){
+                break;
+            }
         }
-        System.out.println("结束时间：" + df.format(new Date()));
-        long endTime=System.currentTimeMillis(); //获取结束时间
-        System.out.println("运行时间（ms）： "+(endTime-startTime));
+        System.out.println("send END");
+        if(random1 == 2){
+            System.out.println("reason: random1 == 2");
+        }
     }
 }
