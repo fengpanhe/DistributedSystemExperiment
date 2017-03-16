@@ -1,4 +1,4 @@
-package client;
+package First.LearnCSMode.client;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;

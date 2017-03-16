@@ -1,4 +1,4 @@
-package client;
+package First.LearnCSMode.client;
 
 public class ClientMain {
 	
