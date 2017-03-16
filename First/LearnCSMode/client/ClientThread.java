@@ -8,16 +8,13 @@ import java.net.UnknownHostException;
 import common.Message;
 
 public class ClientThread extends Thread{
-	private Socket client_socket1, client_socket2;
+	private Socket client_socket;
     private ObjectOutputStream os1;
-    private ObjectOutputStream os2;
     private int dead_time, nums = 20, num_0 = 15, num_1 = 5;
-	public ClientThread(String host1, int port1, String host2, int port2) {
+	public ClientThread(String host, int port) {
 		try {
-			client_socket1 = new Socket(host1, port1);
-//			client_socket2 = new Socket(host2, port2);
-			os1 = new ObjectOutputStream(client_socket1.getOutputStream());
-//			os2 = new ObjectOutputStream(client_socket2.getOutputStream());
+			client_socket = new Socket(host, port);
+			os1 = new ObjectOutputStream(client_socket.getOutputStream());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
