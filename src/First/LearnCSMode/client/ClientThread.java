@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import common.Message;
+import First.LearnCSMode.Message;
 
 public class ClientThread extends Thread{
 	private Socket client_socket;
