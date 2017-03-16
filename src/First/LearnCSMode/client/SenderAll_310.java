@@ -35,8 +35,8 @@ public class SenderAll_310 {
         long startTime=System.currentTimeMillis();   //获取开始时间
 
         Formatter f = new Formatter(System.out);
-        f.format("%-9s %-10s %-19s %-10s \n", "序号", "1/0", "时刻", "间隔（ms）");
-        int result;
+        f.format("%-9s %-10s %-10s %-19s\n", "NO", "random1", "random2", "timer");
+        int random1;
         for(int i = 0; i < 20; i ++) {
             double R = random.nextDouble();
             double T = (-6) * Math.log(R) * 1000;
@@ -46,21 +46,21 @@ public class SenderAll_310 {
                 e.printStackTrace();
             }
             if (counterZero == 15) {
-                result = 1;
+                random1 = 1;
                 counterOne++;
             } else if (counterOne == 5) {
-                result = 0;
+                random1 = 0;
                 counterZero++;
             } else {
                 if (R < 0.25) {
-                    result = 1;
+                    random1 = 1;
                     counterOne++;
                 } else {
-                    result = 0;
+                    random1 = 0;
                     counterZero++;
                 }
             }
-            f.format("%-10d %-10d %-20s %-10d \n",i,result,df.format(new Date()),(int)T);
+            f.format("%-10d %-10d %-20s %-10d \n",i,random1,df.format(new Date()),(int)T);
         }
         System.out.println("结束时间：" + df.format(new Date()));
         long endTime=System.currentTimeMillis(); //获取结束时间
