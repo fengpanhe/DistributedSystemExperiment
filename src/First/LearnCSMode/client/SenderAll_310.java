@@ -33,7 +33,8 @@ public class SenderAll_310 {
         Message message = new Message();
         int counterOne = 0,counterZero = 0;
         int random1 = 0,random2 = 0;
-
+        SocketThread socketThread1 = new SocketThread(ip1,9999);
+        SocketThread socketThread2 = new SocketThread(ip2,9999);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Formatter f = new Formatter(System.out);
         long startTime=System.currentTimeMillis();   //获取开始时间
@@ -90,11 +91,16 @@ public class SenderAll_310 {
             message.setRandom1(random1);
             message.setRandom2(random2);
             message.setTimer(df.format(new Date()));
-
+            socketThread1.setMessage(message);
+            socketThread2.setMessage(message);
+            socketThread1.run();
+            socketThread2.run();
             if(random1 == 2){
                 break;
             }
         }
+        socketThread1.socketClose();
+        socketThread2.socketClose();
         System.out.println("send END");
         if(random1 == 2){
             System.out.println("reason: random1 == 2");
