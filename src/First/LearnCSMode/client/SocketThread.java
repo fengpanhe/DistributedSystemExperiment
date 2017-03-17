@@ -30,7 +30,10 @@ public class SocketThread extends Thread{
 	@Override
 	public void run() {
 		try {
-			Message message = getMessage();
+			Message message = new Message();
+			message.setRandom1(this.message.getRandom1());
+			message.setRandom2(this.message.getRandom2());
+			message.setTimer(this.message.getTimer());
 			os.writeObject(message);
 			os.flush();
 		} catch (IOException e) {

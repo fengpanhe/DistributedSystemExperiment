@@ -9,13 +9,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * Created by he on 17-3-4.
+ * Created by he on 17-3-17.
  */
-public class SenderAll_310 {
-
+public class SendP2P_325 {
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
-        SenderAll_310 test = new SenderAll_310();
+        SendP2P_325 test = new SendP2P_325();
 
         System.out.print("请输入随机数种子： ");
         int random = in.nextInt();
@@ -37,11 +36,10 @@ public class SenderAll_310 {
         SocketThread socketThread2 = new SocketThread(ip2,9999);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Formatter f = new Formatter(System.out);
-        String formatStr = "%-9s %-10s %-10s %-30s\n";
         long startTime=System.currentTimeMillis();   //获取开始时间
 
         System.out.println("广播模式-send");
-        f.format(formatStr, "NO", "random1", "random2", "timer");
+        f.format("%-9s %-10s %-10s %-19s\n", "NO", "random1", "random2", "timer");
         for(int i = 0; i < 20; i ++) {
             double R = random.nextDouble();
             double T = (-6) * Math.log(R) * 1000;
@@ -91,11 +89,26 @@ public class SenderAll_310 {
             message.setRandom1(random1);
             message.setRandom2(random2);
             message.setTimer(df.format(new Date()));
-            f.format(formatStr,i + 1,message.getRandom1(),message.getRandom2(),message.getTimer());
-            socketThread1.setMessage(message);
-            socketThread2.setMessage(message);
-            socketThread1.run();
-            socketThread2.run();
+            f.format("%-10d %-10d %-10d %-20s \n",i + 1,message.getRandom1(),message.getRandom2(),message.getTimer());
+
+            switch (random1){
+                case 0:
+                    socketThread1.setMessage(message);
+                    socketThread1.run();
+                    break;
+                case 1:
+                    socketThread2.setMessage(message);
+                    socketThread2.run();
+                    break;
+                case 2:
+                    socketThread1.setMessage(message);
+                    socketThread1.run();
+                    socketThread2.setMessage(message);
+                    socketThread2.run();
+                    break;
+                default:
+                    System.out.println("random1 is not 1/2/0");
+            }
             if(random1 == 2){
                 break;
             }

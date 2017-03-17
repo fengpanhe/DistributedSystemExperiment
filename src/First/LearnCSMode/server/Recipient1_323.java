@@ -1,7 +1,6 @@
 package First.LearnCSMode.server;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -10,7 +9,7 @@ import java.util.Formatter;
 
 import First.LearnCSMode.Message;
 
-public class Recipient1_ extends Thread{
+public class Recipient1_323 extends Thread{
 
 	public static void main(String[] args) {
 		try {
@@ -21,19 +20,13 @@ public class Recipient1_ extends Thread{
 			int count=0;
 			System.out.println("***服务器即将启动，等待客户端的连接***");
 			//循环监听等待客户端的连接
-			while(true){
-				//调用accept()方法开始监听，等待客户端的连接
-				socket=serverSocket.accept();
-				//创建一个新的线程
-				Recipient1_ serverThread=new Recipient1_(socket);
-				//启动线程
-				serverThread.start();
 
-				count++;//统计客户端的数量
-//				System.out.println("客户端的数量："+count);
-//				InetAddress address=socket.getInetAddress();
-//				System.out.println("当前客户端的IP："+address.getHostAddress());
-			}
+			//调用accept()方法开始监听，等待客户端的连接
+			socket=serverSocket.accept();
+			//创建一个新的线程
+			Recipient1_323 serverThread=new Recipient1_323(socket);
+			//启动线程
+			serverThread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,23 +36,22 @@ public class Recipient1_ extends Thread{
 	// 和本线程相关的Socket
 	Socket socket = null;
 
-	public Recipient1_(Socket socket) {
+	public Recipient1_323(Socket socket) {
 		this.socket = socket;
 	}
 	
 	@Override
 	public void run() {
 		InputStream is=null;
-//		InputStreamReader isr=null;
-		BufferedReader br=null;
 		OutputStream os=null;
 		PrintWriter pw=null;
 		ObjectInputStream ois = null;
 
 		Formatter f = new Formatter(System.out);
+		String formatStr ="%-10s %-10s %-10s %-30s %-30s\n";
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		System.out.println("广播模式: receive");
-		f.format("%-10s %-10s %-10s %-20s %-20s\n", "NO", "random1", "random2", "timer","localTime");
+		f.format(formatStr, "NO", "random1", "random2", "timer","localTime");
 		try {
 			//获取输入流，并读取客户端信息
 			is = socket.getInputStream();
@@ -67,7 +59,7 @@ public class Recipient1_ extends Thread{
 			Message message = null;
 			int i=0;
 			while ((message = (Message) ois.readObject()) != null) {//循环读取客户端的信息
-				f.format("%-10s %-10s %-10s %-20s %-20s\n", i+1, message.getRandom1(), message.getRandom2(), message.getTimer(), df.format(new Date()));
+				f.format(formatStr, i+1, message.getRandom1(), message.getRandom2(), message.getTimer(), df.format(new Date()));
 				i++;
 				if(i == 20||message.getRandom1()==2){
 					break;
@@ -93,10 +85,8 @@ public class Recipient1_ extends Thread{
 					pw.close();
 				if(os!=null)
 					os.close();
-//				if(br!=null)
-//					br.close();
-//				if(isr!=null)
-//					isr.close();
+				if(ois!=null)
+					ois.close();
 				if(is!=null)
 					is.close();
 				if(socket!=null)
