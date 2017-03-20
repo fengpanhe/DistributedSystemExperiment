@@ -71,9 +71,12 @@ public class Recipient2_000 extends Thread{
             System.out.println("receive END");
             if(message.getRandom1()==2){
                 System.out.println("reason: random1 == 2");
-            }else {
-                System.out.println("reason: num(0,1) == 20");
-            }
+            }else if (i_0 == 15) {
+            	System.out.println("reason: num(0) == 15");
+			}else {
+				System.out.println("reason: num(1) == 5");
+			}
+                
             socket.shutdownInput();//关闭输入流
         } catch (IOException e) {
             // TODO Auto-generated catch block
