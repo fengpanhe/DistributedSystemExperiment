@@ -1,13 +1,9 @@
-package First.LearnCSMode.server;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
-
-import First.LearnCSMode.Message;
 
 public class Recipient2_000 extends Thread{
 

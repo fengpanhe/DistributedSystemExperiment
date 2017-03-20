@@ -1,10 +1,7 @@
-package First.LearnCSMode.client;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import First.LearnCSMode.Message;
 
 public class SocketThread extends Thread{
 	private Socket client_socket = null;
