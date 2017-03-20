@@ -46,18 +46,24 @@ public class Recipient2_000 extends Thread{
         Formatter f = new Formatter(System.out);
         String formatStr ="%-10s %-10s %-10s %-30s %-30s\n";
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        System.out.println("广播模式: receive");
+        System.out.println("端对端模式: receive");
         f.format(formatStr, "NO", "random1", "random2", "timer","localTime");
         try {
             //获取输入流，并读取客户端信息
             is = socket.getInputStream();
             ois = new ObjectInputStream(is);
             Message message = null;
-            int i=0;
+            int i = 0;
+            int i_1 = 0;
+            int i_0 = 0;
             while ((message = (Message) ois.readObject()) != null) {//循环读取客户端的信息
-                f.format(formatStr, i+1, message.getRandom1(), message.getRandom2(), message.getTimer(), df.format(new Date()));
-                i++;
-                if(i == 20||message.getRandom1()==2){
+                f.format(formatStr, ++i, message.getRandom1(), message.getRandom2(), message.getTimer(), df.format(new Date()));
+                if (message.getRandom1() == 0) {
+					i_0 ++;
+				}else {
+					i_1 ++;
+				}
+                if(i_0 == 15|| i_1 == 5 || message.getRandom1()==2){
                     break;
                 }
             }
