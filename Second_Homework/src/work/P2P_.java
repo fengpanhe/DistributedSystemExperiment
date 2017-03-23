@@ -36,14 +36,17 @@ public class P2P_ {
 				e.printStackTrace();
 			}
 		}
+
 		@Override
 		public void run() {
+			// TODO
 			while(true){
 				print_source();
 			}
 		}
 		
 		private void print_source(){
+			// TODO
 			/*打印接受信息*/
 		}
 		
@@ -68,10 +71,12 @@ public class P2P_ {
 		}
 		@Override
 		public void run() {
+			// TODO
 			print_source();
 		}
 		
 		private void print_source(){
+			// TODO
 			/*打印接受信息*/
 		}
 		
@@ -95,6 +100,7 @@ public class P2P_ {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// TODO
 		String ip1 = null, ip2 = null;
 		P2P_ p2p_1 = new P2P_(ip1, IConstant.PORT, IConstant.PORT);
 		P2P_ p2p_2 = new P2P_(ip2, IConstant.PORT, IConstant.PORT);
