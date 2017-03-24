@@ -1,3 +1,5 @@
+package work;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,7 +12,7 @@ public class Recipient2_000 extends Thread{
     public static void main(String[] args) {
         try {
             //1.创建一个服务器端Socket，即ServerSocket，指定绑定的端口，并监听此端口
-            ServerSocket serverSocket=new ServerSocket(9999);
+            ServerSocket serverSocket=new ServerSocket(999);
             Socket socket=null;
             //记录客户端的数量
             int count=0;
