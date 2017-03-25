@@ -1,4 +1,7 @@
-package work;
+package work1;
+
+import work.IConstant;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,40 +15,35 @@ import java.util.Random;
 import java.util.Scanner;
 
 
-
 /**
  * @author acer
+ * 
  */
-public class P2P_ implements Runnable{
+public class P2P_ {
 	private Integer M = 100;
 	private Receive rec_thread1;
 	private Send send_thread1;
 	private Receive rec_thread2;
 	private Send send_thread2;
 	private static String pc_id;
-	private int recport = 999;
-
-
-
 	enum  pc_name{i, j, k};
 
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private Formatter f = new Formatter(System.out);
-	private String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
+	private String formatStr = "%-10s %-10s %-10s %-10s %-30\n";
 	
-	public P2P_(String ip1,String ip2, int send_port1, int send_port2,int rec_port, String target_id1, String target_id2) {
-		this.recport = rec_port;
-//		rec_thread1 = new Receive(rec_port, target_id1);
+	public P2P_(String ip1, String ip2, int send_port1, int send_port2, int rec_port, String target_id1, String target_id2) {
+		rec_thread1 = new Receive(rec_port, target_id1);
 		send_thread1 = new Send(ip1, send_port1, target_id1);
-//		rec_thread2 = new Receive(rec_port, target_id2);
+		rec_thread2 = new Receive(rec_port, target_id2);
 		send_thread2 = new Send(ip2, send_port2, target_id2);
 	}
 
 	private synchronized Integer changeRes(char action,Integer res){
 		if(action == '-'){
-			this.M = this.M - res;
+			this.M -= res;
 		}else{
-			this.M = this.M + res;
+			this.M +=res;
 		}
 		return this.M;
 	}
@@ -53,28 +51,8 @@ public class P2P_ implements Runnable{
 	 * 启动接受服务,定义在P2P中
 	 */
 	public void start_recieve(){
-
-		new Thread(this).start();
-	}
-	@Override
-	public void run() {
-		try {
-			ServerSocket serverSocket = new ServerSocket(this.recport);
-			Socket socket=null;
-			int count=0;
-			while (true){
-
-				//调用accept()方法开始监听，等待客户端的连接
-				socket=serverSocket.accept();
-				//创建一个新的线程
-				Receive serverThread=new Receive(socket);
-				//启动线程
-				new Thread(serverThread).start();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		new Thread(rec_thread1).start();
+		new Thread(rec_thread2).start();
 	}
 	
 	/**
@@ -112,7 +90,6 @@ public class P2P_ implements Runnable{
 				}
 			}
 			if(result == 1){
-				System.out.println('j');
 				send_thread1.run();
 			}else{
 				send_thread2.run();
@@ -130,36 +107,28 @@ public class P2P_ implements Runnable{
 		Socket socket = null;
 		ObjectInputStream ois = null;
 
-//		public Receive(int port, String receive_id) {
-//			this.receive_id = receive_id;
-//			Thread.currentThread();
-//			try {
-//				serverSocket = new ServerSocket(port);
-//
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		private Formatter f = new Formatter(System.out);
+		private String formatStr = "%-10s %-10s %-10s %-10s %-30\n";
 
-		public Receive(Socket socket) {
-			this.socket = socket;
-		}
-
-
-		@Override
-		public void run() {
-			int receive_num = 0;
-
+		public Receive(int port, String receive_id) {
+			this.receive_id = receive_id;
+			Thread.currentThread();
 			try {
-//				socket = serverSocket.accept();
+				ServerSocket serverSocket = new ServerSocket(port);
+				socket = serverSocket.accept();
 				ois =  new ObjectInputStream(socket.getInputStream());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		@Override
+		public void run() {
+			int receive_num = 0;
+			
 			while(true){
 				try {
 					Integer temp = (Integer) ois.readObject();
-					this.trans = temp;
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -193,6 +162,10 @@ public class P2P_ implements Runnable{
 		String send_id;
 		Socket socket = null;
 
+		private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		private Formatter f = new Formatter(System.out);
+		private String formatStr = "%-10s %-10s %-10s %-10s %-30\n";
+
 		public Send(String ip, int port, String send_id) {
 			this.send_id = send_id;
 			Thread.currentThread();
@@ -208,11 +181,10 @@ public class P2P_ implements Runnable{
 
 		@Override
 		public void run() {
-
 			print_source();
 			try {
 				Thread.sleep(500);
-				oos.writeObject(trans);
+				oos.writeObject(trans/4);
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -220,7 +192,6 @@ public class P2P_ implements Runnable{
 
 		private void print_source(){
 			/*打印接受信息*/
-			this.trans = M/4;
 			Integer tmp = changeRes('-',this.trans);
 			f.format(formatStr, 0, send_id, trans, tmp, df.format(new Date()));
 		}
@@ -254,8 +225,8 @@ public class P2P_ implements Runnable{
 			ip[i] = in.next();
 			target[i] = pc.toString(); 
 		}
-
-        P2P_ p2p = new P2P_(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
+		System.out.println("参数输入完成，启动recevie");
+        P2P_ p2p = new P2P_(ip[0], ip[1], work.IConstant.sendPORT1, work.IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
         System.out.println("参数输入完成，启动recevie");
         p2p.start_recieve();
         System.out.println("recevie启动完成");
@@ -265,12 +236,12 @@ public class P2P_ implements Runnable{
         if (!make_sure.equals("y")) {
 			return;
 		}
-		Formatter f = new Formatter(System.out);
-		String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
-		f.format(formatStr, "code", "name", "trans", "total", "timer");
+        
         p2p.send_event(random);
 //		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
+		Formatter f = new Formatter(System.out);
+		String formatStr = "%-10s %-10s %-10s %-10s %-30\n";
+		f.format(formatStr, "code", "name", "trans", "total", "timer");
 	}
 
 
