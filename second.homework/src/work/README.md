@@ -1,0 +1,15 @@
+
+## 目录结构
+```
+.
+└── work
+    ├── IConstant.java      //定义端口
+    ├── P2P_.java           //主程序类
+    └── README.md
+```
+
+## 类
+
+### 主程序类为P2P_
+
++ 两个内部类为Receive和Send

@@ -26,11 +26,7 @@ public class P2P_ implements Runnable{
 	private String sendId2;
 	private static String pc_id;
 	private int recport = 999;
-
-
-
 	enum  pc_name{i, j, k};
-
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private Formatter f = new Formatter(System.out);
 	private String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
@@ -41,12 +37,11 @@ public class P2P_ implements Runnable{
 		this.sendIp2 = ip2;
 		this.sendId2 = target_id2;
 		this.recport = rec_port;
-//		rec_thread1 = new Receive(rec_port, target_id1);
 		send_thread1 = new Send(ip1, send_port1, target_id1);
-//		rec_thread2 = new Receive(rec_port, target_id2);
 		send_thread2 = new Send(ip2, send_port2, target_id2);
 	}
 
+	//修改M值的函数,加锁
 	private synchronized Integer changeRes(char action,Integer res){
 		if(action == '-'){
 			this.M = this.M - res;
@@ -59,23 +54,27 @@ public class P2P_ implements Runnable{
 	 * 启动接受服务,定义在P2P中
 	 */
 	public void start_recieve(){
-
 		new Thread(this).start();
 	}
+
+	/**
+	 * 服务端的监听
+	 */
 	@Override
 	public void run() {
 		try {
 			ServerSocket serverSocket = new ServerSocket(this.recport);
 			Socket socket=null;
 			int count=0;
-			while (true){
-
+			//监听两次,创建两个SOCKET
+			while (count<2){
 				//调用accept()方法开始监听，等待客户端的连接
 				socket=serverSocket.accept();
 				//创建一个新的线程
 				Receive serverThread=new Receive(socket);
 				//启动线程
 				new Thread(serverThread).start();
+				count++;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -87,12 +86,12 @@ public class P2P_ implements Runnable{
 	 * 启动发送服务,定义在P2P中
 	 */
 	public void send_event(int seed) {
-		// TODO Auto-generated method stub
 		send_thread1.createSocket();
 		send_thread2.createSocket();
 		Random random = new Random(seed);
 		int counterOne = 0,counterZero = 0;
 		int result;
+		//发送10次
 		for(int i = 0; i < 10; i ++) {
 			double R = random.nextDouble();
 			double T = (-6) * Math.log(R) * 1000;
@@ -144,8 +143,11 @@ public class P2P_ implements Runnable{
 			String clientip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
 			this.clientId = clientip.equals(sendIp1)?  sendId1 :  sendId2;
 		}
-
-
+		private void print_source(){
+			/*打印接受信息*/
+			Integer tmp = changeRes('+',this.trans);
+			f.format(formatStr, 1, this.clientId, trans, tmp, df.format(new Date()));
+		}
 		@Override
 		public void run() {
 			int receive_num = 0;
@@ -166,16 +168,18 @@ public class P2P_ implements Runnable{
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
+			}finally{
+				//关闭资源
+				try {
+					if(ois!=null)
+						ois.close();
+					if(socket!=null)
+						socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-
 		}
-		
-		private void print_source(){
-			/*打印接受信息*/
-			Integer tmp = changeRes('+',this.trans);
-			f.format(formatStr, 1, this.clientId, trans, tmp, df.format(new Date()));
-		}
-		
 	}
 	
 	/**
@@ -266,7 +270,6 @@ public class P2P_ implements Runnable{
 		String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
 		f.format(formatStr, "code", "name", "trans", "total", "timer");
         p2p.send_event(random);
-//		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	}
 
