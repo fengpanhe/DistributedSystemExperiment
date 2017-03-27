@@ -18,10 +18,12 @@ import java.util.Scanner;
  */
 public class P2P_ implements Runnable{
 	private Integer M = 100;
-	private Receive rec_thread1;
 	private Send send_thread1;
-	private Receive rec_thread2;
+	private String sendIp1;
+	private String sendId1;
 	private Send send_thread2;
+	private String sendIp2;
+	private String sendId2;
 	private static String pc_id;
 	private int recport = 999;
 
@@ -34,6 +36,10 @@ public class P2P_ implements Runnable{
 	private String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
 	
 	public P2P_(String ip1,String ip2, int send_port1, int send_port2,int rec_port, String target_id1, String target_id2) {
+		this.sendIp1 = ip1;
+		this.sendId1 = target_id1;
+		this.sendIp2 = ip2;
+		this.sendId2 = target_id2;
 		this.recport = rec_port;
 //		rec_thread1 = new Receive(rec_port, target_id1);
 		send_thread1 = new Send(ip1, send_port1, target_id1);
@@ -82,6 +88,8 @@ public class P2P_ implements Runnable{
 	 */
 	public void send_event(int seed) {
 		// TODO Auto-generated method stub
+		send_thread1.createSocket();
+		send_thread2.createSocket();
 		Random random = new Random(seed);
 		int counterOne = 0,counterZero = 0;
 		int result;
@@ -112,7 +120,6 @@ public class P2P_ implements Runnable{
 				}
 			}
 			if(result == 1){
-				System.out.println('j');
 				send_thread1.run();
 			}else{
 				send_thread2.run();
@@ -125,24 +132,17 @@ public class P2P_ implements Runnable{
 	 * 定义内部接受类
 	 */
 	class Receive implements Runnable{
+		String clientId;
 		Integer trans;
 		String receive_id = null;
 		Socket socket = null;
 		ObjectInputStream ois = null;
 
-//		public Receive(int port, String receive_id) {
-//			this.receive_id = receive_id;
-//			Thread.currentThread();
-//			try {
-//				serverSocket = new ServerSocket(port);
-//
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
 
 		public Receive(Socket socket) {
 			this.socket = socket;
+			String clientip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
+			this.clientId = clientip.equals(sendIp1)?  sendId1 :  sendId2;
 		}
 
 
@@ -151,34 +151,29 @@ public class P2P_ implements Runnable{
 			int receive_num = 0;
 
 			try {
-//				socket = serverSocket.accept();
 				ois =  new ObjectInputStream(socket.getInputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			while(true){
-				try {
+				while(true){
 					Integer temp = (Integer) ois.readObject();
 					this.trans = temp;
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				receive_num++;
-				print_source();
+					receive_num++;
+					print_source();
 
-				if (receive_num == 5) {
-					break;
+					if (receive_num == 5) {
+						break;
+					}
 				}
-	              
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
+
 		}
 		
 		private void print_source(){
 			/*打印接受信息*/
 			Integer tmp = changeRes('+',this.trans);
-			f.format(formatStr, 1, receive_id, trans, tmp, df.format(new Date()));
+			f.format(formatStr, 1, this.clientId, trans, tmp, df.format(new Date()));
 		}
 		
 	}
@@ -188,16 +183,24 @@ public class P2P_ implements Runnable{
 	 * 定义内部发送类
 	 */
 	class Send implements Runnable{
-		Integer trans;
+		Integer trans;  //要发送的资源数
+		String sendId;
+		String sendIp;
+		int sendPort;
 		ObjectOutputStream oos = null;
-		String send_id;
 		Socket socket = null;
 
-		public Send(String ip, int port, String send_id) {
-			this.send_id = send_id;
+		public Send(String ip, int port, String sendId) {
+			this.sendId = sendId;
+			this.sendIp = ip;
+			this.sendPort = port;
+
+		}
+
+		public  void createSocket(){
 			Thread.currentThread();
 			try {
-				socket = new Socket(ip, port);
+				socket = new Socket(this.sendIp, this.sendPort);
 				oos = new ObjectOutputStream(socket.getOutputStream());
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
@@ -205,7 +208,6 @@ public class P2P_ implements Runnable{
 				e.printStackTrace();
 			}
 		}
-
 		@Override
 		public void run() {
 
@@ -218,18 +220,12 @@ public class P2P_ implements Runnable{
 			}
 		}
 
-		private void print_source(){
-			/*打印接受信息*/
-			this.trans = M/4;
-			Integer tmp = changeRes('-',this.trans);
-			f.format(formatStr, 0, send_id, trans, tmp, df.format(new Date()));
+		private void print_source() {
+			/*打印发送信息*/
+			this.trans = M / 4;
+			Integer tmp = changeRes('-', this.trans);
+			f.format(formatStr, 0, this.sendId, this.trans, tmp, df.format(new Date()));
 		}
-
-		public void setTrans(Integer trans) {
-			this.trans = trans;
-		}
-
-
 	}
 	
 	
@@ -238,6 +234,7 @@ public class P2P_ implements Runnable{
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
 		Scanner in = new Scanner(System.in);
 		String ip[] = new String[2];
 		String target[] = new String[2];
@@ -252,10 +249,10 @@ public class P2P_ implements Runnable{
 			}
 			System.out.print("请输入接受者"+ pc.toString() + "的ip： ");
 			ip[i] = in.next();
-			target[i] = pc.toString(); 
+			target[i] = pc.toString();
+			i++;
 		}
-
-        P2P_ p2p = new P2P_(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
+		P2P_ p2p = new P2P_(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
         System.out.println("参数输入完成，启动recevie");
         p2p.start_recieve();
         System.out.println("recevie启动完成");
