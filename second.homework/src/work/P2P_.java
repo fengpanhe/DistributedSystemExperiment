@@ -93,7 +93,7 @@ public class P2P_ implements Runnable{
 		Random random = new Random(seed);
 		int counterOne = 0,counterZero = 0;
 		int result;
-		for(int i = 0; i < 20; i ++) {
+		for(int i = 0; i < 10; i ++) {
 			double R = random.nextDouble();
 			double T = (-6) * Math.log(R) * 1000;
 			try {
