@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="75f32176-b227-4258-8e4b-3c84c0738db4" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/second.homework/src/work/README.md" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/second.homework/src/work1/IConstant.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/second.homework/src/work1/P2P_.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/second.homework/src/work2/IConstant.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/second.homework/src/work2/P2P_.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/second.homework/src/work/P2P_.java" afterPath="$PROJECT_DIR$/second.homework/src/work/P2P_1.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/second.homework/src/work/IConstant.java" afterPath="$PROJECT_DIR$/second.homework/src/work/IConstant.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/second.homework/src/work/P2P_.java" afterPath="$PROJECT_DIR$/second.homework/src/work/P2P_.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/second.homework/src/work/README.md" afterPath="$PROJECT_DIR$/second.homework/src/work/README.md" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -40,13 +35,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="P2P_.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/second.homework/src/work/P2P_.java">
+      <file leaf-file-name="P2P_1.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/second.homework/src/work/P2P_1.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
+            <state relative-caret-position="778">
+              <caret line="51" column="5" lean-forward="false" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
               <folding>
-                <element signature="class#Receive#0;class#P2P_#0" expanded="false" />
+                <element signature="class#Receive#0;class#P2P_1#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -56,8 +51,8 @@
         <entry file="file://$PROJECT_DIR$/second.homework/src/work/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="322">
-                <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
+              <first_editor relative-caret-position="138">
+                <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
                 <folding />
               </first_editor>
               <second_editor>
@@ -250,7 +245,7 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.P2P_">
+  <component name="RunManager" selected="Application.P2P_1">
     <configuration default="false" name="SenderAll_310" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -306,14 +301,14 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="false" name="P2P_" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="P2P_1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="work.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="work.P2P_" />
+      <option name="MAIN_CLASS_NAME" value="work.P2P_1" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -629,11 +624,11 @@
       <item index="1" class="java.lang.String" itemvalue="Application.SenderAll_310" />
       <item index="2" class="java.lang.String" itemvalue="Application.Recipient1_323" />
       <item index="3" class="java.lang.String" itemvalue="Application.SendP2P_325" />
-      <item index="4" class="java.lang.String" itemvalue="Application.P2P_" />
+      <item index="4" class="java.lang.String" itemvalue="Application.P2P_1" />
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Application.P2P_" />
+        <item index="0" class="java.lang.String" itemvalue="Application.P2P_1" />
         <item index="1" class="java.lang.String" itemvalue="Application.SendP2P_325" />
         <item index="2" class="java.lang.String" itemvalue="Application.Recipient1_323" />
         <item index="3" class="java.lang.String" itemvalue="Application.SenderAll_310" />
@@ -668,7 +663,7 @@
     <layout>
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16862327" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17022412" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919955" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
@@ -847,12 +842,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/second.homework/src/work/P2P_.java">
+    <entry file="file://$PROJECT_DIR$/second.homework/src/work/P2P_1.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
+        <state relative-caret-position="778">
+          <caret line="51" column="5" lean-forward="false" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
           <folding>
-            <element signature="class#Receive#0;class#P2P_#0" expanded="false" />
+            <element signature="class#Receive#0;class#P2P_1#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -866,8 +861,8 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="322">
-            <caret line="14" column="20" lean-forward="true" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
+          <first_editor relative-caret-position="138">
+            <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
             <folding />
           </first_editor>
           <second_editor>

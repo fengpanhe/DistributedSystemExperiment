@@ -16,7 +16,7 @@ import java.util.Scanner;
 /**
  * @author acer
  */
-public class P2P_ implements Runnable{
+public class P2P_1 implements Runnable{
 	private Integer M = 100;
 	private Send send_thread1;
 	private String sendIp1;
@@ -31,7 +31,7 @@ public class P2P_ implements Runnable{
 	private Formatter f = new Formatter(System.out);
 	private String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
 	
-	public P2P_(String ip1,String ip2, int send_port1, int send_port2,int rec_port, String target_id1, String target_id2) {
+	public P2P_1(String ip1, String ip2, int send_port1, int send_port2, int rec_port, String target_id1, String target_id2) {
 		this.sendIp1 = ip1;
 		this.sendId1 = target_id1;
 		this.sendIp2 = ip2;
@@ -256,7 +256,7 @@ public class P2P_ implements Runnable{
 			target[i] = pc.toString();
 			i++;
 		}
-		P2P_ p2p = new P2P_(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
+		P2P_1 p2p = new P2P_1(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
         System.out.println("参数输入完成，启动recevie");
         p2p.start_recieve();
         System.out.println("recevie启动完成");
