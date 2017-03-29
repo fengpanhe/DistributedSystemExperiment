@@ -266,7 +266,6 @@ public class P2P_ implements Runnable{
 		String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
 		f.format(formatStr, "code", "name", "trans", "total", "timer");
         p2p.send_event(random);
-//		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	}
 
