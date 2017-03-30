@@ -9,12 +9,14 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Queue;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
-/**
- * Created by he on 17-3-29.
- */
 public class How_many_1 implements Runnable{
     private Integer M = 100;
     private Send send_thread1;
@@ -28,7 +30,15 @@ public class How_many_1 implements Runnable{
     enum  pc_name{i, j, k};
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private Formatter f = new Formatter(System.out);
-    private String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
+    private String formatStr = "%-5s %-1s:%-5s %-1s:%-5s %-1s:%-5s"
+			+ "%-5s:%-5s startTime:%-15s endTime:%-15s\n";
+    private Logger logger = Logger.getLogger("test");
+	private FileHandler fileHandler;
+	private Queue<Date> startTime;
+	private boolean lock = false;
+	private Integer recordNum = 0;
+	private int num = 0;
+	private String clientid;
 
     public How_many_1(String ip1, String ip2, int send_port1, int send_port2, int rec_port, String target_id1, String target_id2) {
         this.sendIp1 = ip1;
@@ -38,9 +48,32 @@ public class How_many_1 implements Runnable{
         this.recport = rec_port;
         send_thread1 = new Send(ip1, send_port1, target_id1);
         send_thread2 = new Send(ip2, send_port2, target_id2);
+        setlog();
     }
 
-    //修改M值的函数,加锁
+    private void setlog() {
+    	logger.setLevel(Level.ALL);
+		logger.setUseParentHandlers(false);
+		try {
+			fileHandler = new FileHandler("source.log");
+			fileHandler.setLevel(Level.ALL);
+			fileHandler.setFormatter(new java.util.logging.Formatter() {
+				@Override
+				public String format(LogRecord record) {
+					String[] rStrings = record.getMessage().split(" ");
+					String format = "%-3s %-3s %-4s %-5s %-5s %-15s\n";
+					return String.format(format, rStrings[0], rStrings[1],
+							rStrings[4],rStrings[2], rStrings[5], rStrings[3]);
+				}
+			});
+			logger.addHandler(fileHandler);
+		} catch (SecurityException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		};
+	}
+
     private synchronized Integer changeRes(char action,Integer res){
         if(action == '-'){
             this.M = this.M - res;
@@ -49,29 +82,47 @@ public class How_many_1 implements Runnable{
         }
         return this.M;
     }
-    /**
-     * 启动接受服务,定义在P2P中
-     */
+    
+    private synchronized void print_log(Date date, String pc_name, String action, String code, Integer trans, Integer M) {
+		/*打印日志*/
+    	if (trans < 1024) {
+    		logger.info(action + " " + pc_name + " " + code + " " + df.format(date) + " " + trans.toString() + " " + M.toString());
+		}else if (trans > 2048) {
+			trans -= 2048;
+			logger.info(action + " " + pc_name + " " + code + " " + df.format(date) + " " + trans.toString() + " " + "0");
+		}else {
+			trans -= 1024;
+			logger.info(action + " " + pc_name + " " + code + " " + df.format(date) + " " + "0" + " " + "0");
+		}
+		
+	}
+    
+    private synchronized void print_source(Integer trans, String id) {
+		if (!lock) {
+			lock = true;
+			recordNum = trans;
+			clientid = id;
+		}else {
+			lock = false;
+			f.format(formatStr,num, pc_id, M.toString(),
+					clientid, recordNum.toString(), id, trans.toString(),
+					startTime.poll(), df.format(new Date()));
+			num ++;
+		}
+	}
     public void start_recieve(){
         new Thread(this).start();
     }
 
-    /**
-     * 服务端的监听
-     */
     @Override
     public void run() {
         try {
             ServerSocket serverSocket = new ServerSocket(this.recport);
             Socket socket=null;
             int count=0;
-            //监听两次,创建两个SOCKET
             while (count<2){
-                //调用accept()方法开始监听，等待客户端的连接
                 socket=serverSocket.accept();
-                //创建一个新的线程
                 Receive serverThread=new Receive(socket);
-                //启动线程
                 new Thread(serverThread).start();
                 count++;
             }
@@ -81,12 +132,10 @@ public class How_many_1 implements Runnable{
 
     }
 
-    /**
-     * 启动发送服务,定义在P2P中
-     */
     public void send_event(int seed) {
         send_thread1.createSocket();
         send_thread2.createSocket();
+        Integer tmp, code;
         Random random = new Random(seed);
         int counterOne = 0,counterZero = 0;
         int result;
@@ -99,9 +148,6 @@ public class How_many_1 implements Runnable{
                 R = random.nextDouble();
                 T = Math.log(R) * 1000;
                 time1 += T;
-                /*
-                **result
-                */
                 if (counterZero == 50) {
                     result = 1;
                     counterOne++;
@@ -118,14 +164,14 @@ public class How_many_1 implements Runnable{
                     }
                 }
                 if(result == 1){
-                    Integer code = 10;
-                    Integer tmp = changeRes('-', code);
-                    f.format(formatStr, 0, this.sendId1, code, tmp, df.format(new Date()));
+                    code = 10;
+                    tmp = changeRes('-', code);
+                    print_log(new Date(), this.sendId1, "0", "00", code, tmp);
                     send_thread1.sendEvent(code,(long) T);
                 }else{
-                    Integer code = 10;
-                    Integer tmp = changeRes('-', code);
-                    f.format(formatStr, 0, this.sendId1, code, tmp, df.format(new Date()));
+                    code = 10;
+                    tmp = changeRes('-', code);
+                    print_log(new Date(), this.sendId2, "0", "00", code, tmp);
                     send_thread2.sendEvent(code,(long) T);
                 }
                 i++;
@@ -134,9 +180,8 @@ public class How_many_1 implements Runnable{
                 R = random.nextDouble();
                 T = 9 * Math.log(R) * 1000;
                 time2 += T;
-                Integer code = 10;
-                Integer tmp = changeRes('-', code);
-                f.format(formatStr, 0, this.sendId1, code, tmp, df.format(new Date()));
+                code = 1024;
+                startTime.add(new Date());
                 send_thread1.sendEvent(code,(long) T);
                 send_thread2.sendEvent(code,(long) T);
                 j++;
@@ -145,10 +190,6 @@ public class How_many_1 implements Runnable{
         }
     }
 
-    /**
-     * @author acer
-     * 定义内部接受类
-     */
     class Receive implements Runnable{
         String clientId;
         Integer trans;
@@ -162,11 +203,7 @@ public class How_many_1 implements Runnable{
             String clientip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
             this.clientId = clientip.equals(sendIp1)?  sendId1 :  sendId2;
         }
-        private void print_source(){
-			/*打印接受信息*/
-            Integer tmp = changeRes('+',this.trans);
-            f.format(formatStr, 1, this.clientId, trans, tmp, df.format(new Date()));
-        }
+      
         @Override
         public void run() {
             int receive_num = 0;
@@ -176,10 +213,16 @@ public class How_many_1 implements Runnable{
                 while(true){
                     Integer temp = (Integer) ois.readObject();
                     this.trans = temp;
+                    if (trans < 1024) {
+                    	temp = changeRes('+',this.trans);
+                    	print_log(new Date(), this.clientId, "1", "00", trans, temp);
+					}else if (trans >= 2048) {
+						print_source(trans, this.clientId);
+					}else {
+						print_log(new Date(), this.clientId, "1", "01", trans, 0);
+					}
                     receive_num++;
-                    print_source();
-
-                    if (receive_num == 5) {
+                    if (receive_num == 140) {
                         break;
                     }
                 }
@@ -188,7 +231,6 @@ public class How_many_1 implements Runnable{
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } finally{
-                //关闭资源
                 try {
                     if(ois!=null)
                         ois.close();
@@ -201,10 +243,7 @@ public class How_many_1 implements Runnable{
         }
     }
 
-    /**
-     * @author acer
-     * 定义内部发送类
-     */
+
     class Send implements Runnable{
         Integer code;  //要发送的资源数
         long waitTime;
@@ -245,7 +284,6 @@ public class How_many_1 implements Runnable{
         @Override
         public void run() {
                 this.sendWait();
-//            print_source();
             try {
                 Thread.sleep(500);
                 oos.writeObject(this.code);
@@ -254,19 +292,10 @@ public class How_many_1 implements Runnable{
             }
         }
 
-//        private void print_source() {
-//			/*打印发送信息*/
-//            this.trans = M / 4;
-//            Integer tmp = changeRes('-', this.trans);
-//            f.format(formatStr, 0, this.sendId, this.trans, tmp, df.format(new Date()));
-//        }
     }
 
 
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
 
         Scanner in = new Scanner(System.in);
@@ -286,9 +315,9 @@ public class How_many_1 implements Runnable{
             target[i] = pc.toString();
             i++;
         }
-        How_many_1 p2p = new How_many_1(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
+        How_many_1 how = new How_many_1(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
         System.out.println("参数输入完成，启动recevie");
-        p2p.start_recieve();
+        how.start_recieve();
         System.out.println("recevie启动完成");
 
         System.out.print("输入y启动send： ");
@@ -296,10 +325,7 @@ public class How_many_1 implements Runnable{
         if (!make_sure.equals("y")) {
             return;
         }
-        Formatter f = new Formatter(System.out);
-        String formatStr = "%-10s %-10s %-10s %-10s %-30s\n";
-        f.format(formatStr, "code", "name", "trans", "total", "timer");
-        p2p.send_event(random);
+        how.send_event(random);
 
     }
 
