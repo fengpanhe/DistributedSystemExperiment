@@ -14,9 +14,9 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class How_many_1{
-	ReceiveThreadManager receive;//接受线程管理
-	Send send1;//发送给第一个节点的线程
-	Send send2;//发送给第二个节点的线程
+	ReceiveThreadManager receive;
+	Send send1;
+	Send send2;
 	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();//线程池管理发送线程
 	static String node_name, node1, node2;
 	static String ip1, ip2;
@@ -158,13 +158,13 @@ public class How_many_1{
                     }
                 }
                 if(result == 1){
-                    code = 10;
+                    code = M / 4;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node1, "0", "00", code, tmp);
                     send1.sendEvent(code,(long) T);
                     tPoolExecutor.execute(send1);
                 }else{
-                    code = 10;
+                    code = M / 4;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node2, "0", "00", code, tmp);
                     tPoolExecutor.execute(send2);
