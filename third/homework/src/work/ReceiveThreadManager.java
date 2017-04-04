@@ -1,8 +1,6 @@
 package work;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -12,7 +10,7 @@ public class ReceiveThreadManager implements Runnable{
 	ServerSocket server;
 	public ReceiveThreadManager() {
 		try {
-			server = new ServerSocket(IConstant.PORT);
+			server = new ServerSocket(IConstant2.PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
