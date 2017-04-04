@@ -256,7 +256,7 @@ public class P2P_1 implements Runnable{
 			target[i] = pc.toString();
 			i++;
 		}
-		P2P_1 p2p = new P2P_1(ip[0], ip[1], IConstant.sendPORT1,IConstant.sendPORT2, IConstant.receivePORT, target[0], target[1]);
+		P2P_1 p2p = new P2P_1(ip[0], ip[1], IConstant2.sendPORT1, IConstant2.sendPORT2, IConstant2.receivePORT, target[0], target[1]);
         System.out.println("参数输入完成，启动recevie");
         p2p.start_recieve();
         System.out.println("recevie启动完成");
