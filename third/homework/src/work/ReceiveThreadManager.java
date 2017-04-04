@@ -10,7 +10,7 @@ public class ReceiveThreadManager implements Runnable{
 	ServerSocket server;
 	public ReceiveThreadManager() {
 		try {
-			server = new ServerSocket(IConstant2.PORT);
+			server = new ServerSocket(IConstant.PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
