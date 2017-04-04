@@ -140,7 +140,7 @@ public class How_many_1{
         for(int i = 0,j=0; i < 100 | j<10;) {
             if(time1 <= System.currentTimeMillis()){
                 R = random.nextDouble();
-                T = Math.log(R) * 1000;
+                T = -Math.log(R) * 1000;
                 time1 += T;
                 if (counterZero == 50) {
                     result = 1;
@@ -158,7 +158,7 @@ public class How_many_1{
                     }
                 }
                 if(result == 1){
-                    code = M / 4;
+                    code = M / 5;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node1, "0", "00", code, tmp);
                     send1.sendEvent(code,(long) T);
@@ -173,7 +173,7 @@ public class How_many_1{
             }
             if(time2 <= System.currentTimeMillis()){
                 R = random.nextDouble();
-                T = 9 * Math.log(R) * 1000;
+                T = -9 * Math.log(R) * 1000;
                 time2 += T;
                 code = 1024;
                 startTime.add(new Date());
