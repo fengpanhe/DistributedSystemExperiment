@@ -115,11 +115,12 @@ public class How_many_1{
 	private synchronized void print_source(Integer trans, String id) {
 		num++;
 		if (num != 2) {
-			recordNum = trans;
+			recordNum = trans - 2048;
 			pre_id = id;
 			return;
 		}
 		num_print++;
+		trans -= 2048;
 		Integer all = M+recordNum+trans;
 		f.format(formatStr, num_print, node_name, M.toString(),
 				pre_id, recordNum.toString(), id, trans.toString(), all.toString(),
