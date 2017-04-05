@@ -25,7 +25,7 @@ public class How_many_1{
 	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private Formatter f = new Formatter(System.out);
     private String formatStr = "%-5s %-1s:%-5s %-1s:%-5s %-1s:%-5s"
-			+ "%-5s:%-5s startTime:%-15s endTime:%-15s\n";
+			+ " total:%-5s startTime:%-15s endTime:%-15s\n";
     private Logger logger = Logger.getLogger("test");
 	private FileHandler fileHandler;
 	private Queue<String> startTime = new LinkedList<String>();
@@ -33,7 +33,7 @@ public class How_many_1{
 	private String pre_id;
 	
 	public How_many_1(String node_name, String node1, String node2, String ip1, String ip2) {
-		How_many_1.node_name = node_name;
+	    How_many_1.node_name = node_name;
 		How_many_1.node1 = node1;
 		How_many_1.node2 = node2;
 		How_many_1.ip1 = ip1;
@@ -52,11 +52,11 @@ public class How_many_1{
 				}else {
 					print_log(new Date(), id, "1", "01", src, 0);
 					if (id.equals(node1)) {
-						send1.sendEvent(M, 0);
+						send1.sendEvent(M+2048, 0);
 						tPoolExecutor.execute(send1);
 					}
 					else {
-						send2.sendEvent(M, 0);
+						send2.sendEvent(M+2048, 0);
 						tPoolExecutor.execute(send2);
 					}
 						
@@ -79,7 +79,7 @@ public class How_many_1{
 		/*打印日志*/
     	if (trans < 1024) {
     		logger.info(action + " " + pc_name + " " + code + " " + df.format(date) + " " + trans.toString() + " " + M.toString());
-		}else if (trans > 2048) {
+		}else if (trans >= 2048) {
 			trans -= 2048;
 			logger.info(action + " " + pc_name + " " + code + " " + df.format(date) + " " + trans.toString() + " " + "0");
 		}else {
@@ -120,8 +120,9 @@ public class How_many_1{
 			return;
 		}
 		num_print++;
+		Integer all = M+recordNum+trans;
 		f.format(formatStr, num_print, node_name, M.toString(),
-				pre_id, recordNum.toString(), id, trans.toString(),
+				pre_id, recordNum.toString(), id, trans.toString(), all.toString(),
 				startTime.poll(), df.format(new Date()));
 		num = 0;
 	}
@@ -137,8 +138,8 @@ public class How_many_1{
 	}
 	
 	public void start_send(int seed) {
-		if(send1 == null)send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
-		if(send2 == null)send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
+		if(send1 == null) send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
+		if(send2 == null) send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
 
         Integer tmp, code;
         Random random = new Random(seed);
@@ -178,6 +179,7 @@ public class How_many_1{
                     code = M / 4;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node2, "0", "00", code, tmp);
+                    send2.sendEvent(code,(long) T);
                     tPoolExecutor.execute(send2);
                 }
                 i++;

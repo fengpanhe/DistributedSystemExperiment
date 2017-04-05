@@ -12,16 +12,21 @@ public class Receive implements Runnable{
         this.socket = socket;
         String clientip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
         this.receive_id = clientip.equals(How_many_1.ip1)?  How_many_1.node1 :  How_many_1.node2;
-        try {
-			ois = new ObjectInputStream(socket.getInputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//        try {
+//
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
     }
     
     @Override
     public void run() {
     	int receive_num = 0;
+		try {
+			ois = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		while(true){
 			Integer src;
 			try {
