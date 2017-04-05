@@ -16,8 +16,8 @@ import java.util.logging.Logger;
 
 public class How_many_1{
 	ReceiveThreadManager receive;
-	Send send1;
-	Send send2;
+	Send send1 = null;
+	Send send2 = null;
 	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();//线程池管理发送线程
 	static String node_name, node1, node2;
 	static String ip1, ip2;
@@ -42,6 +42,8 @@ public class How_many_1{
 			
 			@Override
 			public void receive_handler(Integer src, String id) {
+				if(send1 == null) send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
+				if(send2 == null) send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
 				if (src < 1024) {
                 	changeRes('+',src);
                 	print_log(new Date(), id, "1", "00", src, M);
@@ -135,8 +137,9 @@ public class How_many_1{
 	}
 	
 	public void start_send(int seed) {
-		send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
-		send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
+		if(send1 == null)send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
+		if(send2 == null)send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
+
         Integer tmp, code;
         Random random = new Random(seed);
         int counterOne = 0,counterZero = 0;
