@@ -1,6 +1,8 @@
 package work;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 

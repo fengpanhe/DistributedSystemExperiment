@@ -1,8 +1,12 @@
 package work;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.FileHandler;
@@ -24,8 +28,9 @@ public class How_many_1{
 			+ "%-5s:%-5s startTime:%-15s endTime:%-15s\n";
     private Logger logger = Logger.getLogger("test");
 	private FileHandler fileHandler;
-	private Queue<Date> startTime;
-	private int num = 0;
+	private Queue<String> startTime = new LinkedList<String>();
+	private int num = 0, num_print = 0;
+	private String pre_id;
 	
 	public How_many_1(String node_name, String node1, String node2, String ip1, String ip2) {
 		How_many_1.node_name = node_name;
@@ -37,7 +42,6 @@ public class How_many_1{
 			
 			@Override
 			public void receive_handler(Integer src, String id) {
-				tPoolExecutor.execute(send1);
 				if (src < 1024) {
                 	changeRes('+',src);
                 	print_log(new Date(), id, "1", "00", src, M);
@@ -93,9 +97,9 @@ public class How_many_1{
 				@Override
 				public String format(LogRecord record) {
 					String[] rStrings = record.getMessage().split(" ");
-					String format = "%-3s %-3s %-4s %-5s %-5s %-15s\n";
+					String format = "%-3s %-3s %-4s %-5s %-5s %-25s\r\n";
 					return String.format(format, rStrings[0], rStrings[1],
-							rStrings[4],rStrings[2], rStrings[5], rStrings[3]);
+							rStrings[2],rStrings[4], rStrings[5], rStrings[3]);
 				}
 			});
 			logger.addHandler(fileHandler);
@@ -108,9 +112,16 @@ public class How_many_1{
 	
 	private synchronized void print_source(Integer trans, String id) {
 		num++;
-		f.format(formatStr, num, node_name, M.toString(),
-				id, recordNum.toString(), id, trans.toString(),
+		if (num != 2) {
+			recordNum = trans;
+			pre_id = id;
+			return;
+		}
+		num_print++;
+		f.format(formatStr, num_print, node_name, M.toString(),
+				pre_id, recordNum.toString(), id, trans.toString(),
 				startTime.poll(), df.format(new Date()));
+		num = 0;
 	}
 	
 	private void start_receive() {
@@ -173,9 +184,11 @@ public class How_many_1{
                 T = -9 * Math.log(R) * 1000;
                 time2 += T;
                 code = 1024;
-                startTime.add(new Date());
+                startTime.add(df.format(new Date()));
                 send1.sendEvent(code,(long) T);
                 send2.sendEvent(code,(long) T);
+                tPoolExecutor.execute(send1);
+                tPoolExecutor.execute(send2);
                 j++;
             }
         }
