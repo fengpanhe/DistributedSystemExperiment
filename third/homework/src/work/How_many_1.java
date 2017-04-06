@@ -1,5 +1,6 @@
 package work;
 import java.io.IOException;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
@@ -16,8 +17,8 @@ import java.util.logging.Logger;
 
 public class How_many_1{
 	ReceiveThreadManager receive;
-	Send send1 = null;
-	Send send2 = null;
+	Socket sendSocket1 = null;
+	Socket sendSocket2 = null;
 	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();//线程池管理发送线程
 	static String node_name, node1, node2;
 	static String ip1, ip2;
@@ -42,8 +43,14 @@ public class How_many_1{
 			
 			@Override
 			public void receive_handler(Integer src, String id) {
-				if(send1 == null) send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
-				if(send2 == null) send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
+//				if(sendSocket1 == null) sendSocket1 = new SendEvent(ip1, IConstant.PORT, node1, IConstant.DENY);
+//				if(sendSocket2 == null) sendSocket2 = new SendEvent(ip2, IConstant.PORT, node2, IConstant.DENY);
+                try {
+                    if(sendSocket1 == null) sendSocket1 = new Socket(ip1, IConstant.PORT);
+                    if(sendSocket2 == null) sendSocket2 = new Socket(ip2, IConstant.PORT);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 				if (src < 1024) {
                 	changeRes('+',src);
                 	print_log(new Date(), id, "1", "00", src, M);
@@ -52,12 +59,14 @@ public class How_many_1{
 				}else {
 					print_log(new Date(), id, "1", "01", src, 0);
 					if (id.equals(node1)) {
-						send1.sendEvent(M+2048, 0);
-						tPoolExecutor.execute(send1);
+//						sendSocket1.sendEvent(M+2048, 0);
+//						tPoolExecutor.execute(sendSocket1);
+                        tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,M+2048,0));
 					}
 					else {
-						send2.sendEvent(M+2048, 0);
-						tPoolExecutor.execute(send2);
+//						sendSocket2.sendEvent(M+2048, 0);
+//						tPoolExecutor.execute(sendSocket2);
+                        tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,M+2048,0));
 					}
 						
 				}
@@ -139,8 +148,12 @@ public class How_many_1{
 	}
 	
 	public void start_send(int seed) {
-		if(send1 == null) send1 = new Send(ip1, IConstant.PORT, node1, IConstant.DENY);
-		if(send2 == null) send2 = new Send(ip2, IConstant.PORT, node2, IConstant.DENY);
+		try {
+			if(sendSocket1 == null) sendSocket1 = new Socket(ip1, IConstant.PORT);
+			if(sendSocket2 == null) sendSocket2 = new Socket(ip2, IConstant.PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
         Integer tmp, code;
         Random random = new Random(seed);
@@ -174,15 +187,17 @@ public class How_many_1{
                     code = M / 5;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node1, "0", "00", code, tmp);
-                    send1.sendEvent(code,(long) T);
-                    tPoolExecutor.execute(send1);
+//                    send1.sendEvent(code,(long) T);
+                    tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,code,(long) T));
                 }else{
                     code = M / 4;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node2, "0", "00", code, tmp);
-                    send2.sendEvent(code,(long) T);
-                    tPoolExecutor.execute(send2);
+//                    send2.sendEvent(code,(long) T);
+//                    tPoolExecutor.execute(sendSocket2);
+                    tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,code,(long) T));
                 }
+
                 i++;
             }
             if(time2 <= System.currentTimeMillis()){
@@ -191,10 +206,12 @@ public class How_many_1{
                 time2 += T;
                 code = 1024;
                 startTime.add(df.format(new Date()));
-                send1.sendEvent(code,(long) T);
-                send2.sendEvent(code,(long) T);
-                tPoolExecutor.execute(send1);
-                tPoolExecutor.execute(send2);
+//                sendSocket1.sendEvent(code,(long) T);
+//                sendSocket2.sendEvent(code,(long) T);
+//                tPoolExecutor.execute(sendSocket1);
+//                tPoolExecutor.execute(sendSocket2);
+                tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,code,(long) T));
+                tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,code,(long) T));
                 j++;
             }
         }
