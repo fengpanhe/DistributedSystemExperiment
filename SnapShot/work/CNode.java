@@ -13,7 +13,7 @@ public class CNode{
 	}
 	
 	private void start_receive() {
-		receive = new ReceiveThreadManager(0, IConstant.portc);
+		receive = new ReceiveThreadManager(IConstant.portc, true);
 		new Thread(receive).start();
 	}
 	

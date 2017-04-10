@@ -10,12 +10,12 @@ public class ReceiveThreadManager implements Runnable{
 	
 	ThreadPoolExecutor poolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 	ServerSocket server;
-	int level = 0;//0表示P节点，1为C节点
-	
-	public ReceiveThreadManager(int level, int port) {
-		this.level = level;
+	int connect_num = 0;
+	boolean level = false;
+	public ReceiveThreadManager(int port, boolean level) {
 		try {
 			server = new ServerSocket(port);
+			this.level = level;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -33,8 +33,9 @@ public class ReceiveThreadManager implements Runnable{
 	@Override
 	public void run() {
 		try{
-            while (!server.isClosed()) {
+            while (connect_num < 3) {
             	poolExecutor.execute(new Receive(server.accept(), level));
+            	connect_num ++;
             }
         } catch (IOException e) {
             e.printStackTrace();
