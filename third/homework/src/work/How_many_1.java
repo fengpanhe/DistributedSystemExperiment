@@ -165,8 +165,8 @@ public class How_many_1{
         long time2 = System.currentTimeMillis();
         double R;
         double T;
-        for(int i = 0,j=0; i < 100 | j<10;) {
-            if(time1 <= System.currentTimeMillis()){
+        for(int i = 0,j=0; i < 100 || j<10;) {
+            if(time1 <= System.currentTimeMillis() && i < 100){
                 R = random.nextDouble();
                 T = -Math.log(R) * 1000;
                 time1 += T;
@@ -202,7 +202,7 @@ public class How_many_1{
 
                 i++;
             }
-            if(time2 <= System.currentTimeMillis()){
+            if(time2 <= System.currentTimeMillis() && j < 10){
                 R = random.nextDouble();
                 T = -9 * Math.log(R) * 1000;
                 time2 += T;
@@ -262,7 +262,7 @@ public class How_many_1{
             return;
         }
         how.start_send(random);
-        how.closeThread();
+//        how.closeThread();
         how.receive.closeAllThread();
 	}
 
