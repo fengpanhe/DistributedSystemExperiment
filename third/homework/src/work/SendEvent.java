@@ -14,21 +14,16 @@ class SendEvent implements Runnable{
     Integer code;
     long waitTime;
 
-    public SendEvent(Socket socket, String sendId, int deny,Integer code, long waitTime) {
+    public SendEvent(ObjectOutputStream socket, String sendId, int deny,Integer code, long waitTime) {
     	this.sendId = sendId;
     	this.deny = deny;
         this.code = code;
         this.waitTime = waitTime;
 //    	this.sendIp = ip;
 //    	this.sendPort = port;
-    	try {
+
 //			socket = new Socket(this.sendIp, this.sendPort);
-			 oos = new ObjectOutputStream(socket.getOutputStream());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-            e.printStackTrace();
-        }
+        oos = socket;
 
     }
     
