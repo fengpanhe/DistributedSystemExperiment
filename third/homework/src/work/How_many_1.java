@@ -1,5 +1,7 @@
+
 package work;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,8 +19,8 @@ import java.util.logging.Logger;
 
 public class How_many_1{
 	ReceiveThreadManager receive;
-	Socket sendSocket1 = null;
-	Socket sendSocket2 = null;
+	ObjectOutputStream sendSocket1 = null;
+	ObjectOutputStream sendSocket2 = null;
 	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();//线程池管理发送线程
 	static String node_name, node1, node2;
 	static String ip1, ip2;
@@ -46,8 +48,8 @@ public class How_many_1{
 //				if(sendSocket1 == null) sendSocket1 = new SendEvent(ip1, IConstant.PORT, node1, IConstant.DENY);
 //				if(sendSocket2 == null) sendSocket2 = new SendEvent(ip2, IConstant.PORT, node2, IConstant.DENY);
                 try {
-                    if(sendSocket1 == null) sendSocket1 = new Socket(ip1, IConstant.PORT);
-                    if(sendSocket2 == null) sendSocket2 = new Socket(ip2, IConstant.PORT);
+                    if(sendSocket1 == null) sendSocket1 = (ObjectOutputStream) new Socket(ip1, IConstant.PORT).getOutputStream();
+                    if(sendSocket2 == null) sendSocket2 = (ObjectOutputStream) new Socket(ip2, IConstant.PORT).getOutputStream();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -149,8 +151,8 @@ public class How_many_1{
 	
 	public void start_send(int seed) {
 		try {
-			if(sendSocket1 == null) sendSocket1 = new Socket(ip1, IConstant.PORT);
-			if(sendSocket2 == null) sendSocket2 = new Socket(ip2, IConstant.PORT);
+			if(sendSocket1 == null) sendSocket1 = (ObjectOutputStream) new Socket(ip1, IConstant.PORT).getOutputStream();
+			if(sendSocket2 == null) sendSocket2 = (ObjectOutputStream) new Socket(ip2, IConstant.PORT).getOutputStream();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
