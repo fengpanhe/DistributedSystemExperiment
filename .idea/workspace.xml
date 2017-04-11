@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="75f32176-b227-4258-8e4b-3c84c0738db4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source.log" afterPath="$PROJECT_DIR$/source.log" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/third/homework/src/work/How_many_1.java" afterPath="$PROJECT_DIR$/third/homework/src/work/How_many_1.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/third/homework/src/work/SendEvent.java" afterPath="$PROJECT_DIR$/third/homework/src/work/SendEvent.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,9 +28,11 @@
       <file leaf-file-name="SendEvent.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/third/homework/src/work/SendEvent.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
-              <folding />
+            <state relative-caret-position="230">
+              <caret line="25" column="21" lean-forward="true" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -40,9 +40,10 @@
       <file leaf-file-name="How_many_1.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/third/homework/src/work/How_many_1.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="344">
-              <caret line="153" column="90" lean-forward="true" selection-start-line="153" selection-start-column="90" selection-end-line="153" selection-end-column="90" />
+            <state relative-caret-position="534">
+              <caret line="50" column="133" lean-forward="false" selection-start-line="50" selection-start-column="133" selection-end-line="50" selection-end-column="133" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="e#1235#1243#0" expanded="true" />
               </folding>
             </state>
@@ -621,8 +622,8 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35300207" sideWeight="0.45997867" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32919255" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18544367" sideWeight="0.53788686" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18544367" sideWeight="0.4621131" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26021934" sideWeight="0.7550694" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26021934" sideWeight="0.24493062" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18196371" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -797,6 +798,7 @@
         <state relative-caret-position="368">
           <caret line="18" column="7" lean-forward="false" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#1235#1243#0" expanded="true" />
           </folding>
         </state>
@@ -927,17 +929,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/third/homework/src/work/SendEvent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
-          <folding />
+        <state relative-caret-position="230">
+          <caret line="25" column="21" lean-forward="true" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/third/homework/src/work/How_many_1.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="153" column="90" lean-forward="true" selection-start-line="153" selection-start-column="90" selection-end-line="153" selection-end-column="90" />
+        <state relative-caret-position="534">
+          <caret line="50" column="133" lean-forward="false" selection-start-line="50" selection-start-column="133" selection-end-line="50" selection-end-column="133" />
           <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#1235#1243#0" expanded="true" />
           </folding>
         </state>
