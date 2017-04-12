@@ -1,5 +1,8 @@
 package work;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -9,6 +12,7 @@ public class CNode{
 	ReceiveThreadManager receive;
 	HashMap<String, Snap> snap_all;
 	static String ip_i, ip_j, ip_k;
+	ObjectOutputStream oos_i, oos_j, oos_k;
 
 	public CNode(String ip1, String ip2, String ip3) {
 		ip_i = ip1;
@@ -16,6 +20,16 @@ public class CNode{
 		ip_k = ip3;
 		start_receive();
 		set_callbackc();
+	}
+	
+	private void start_send() {
+		try {
+			oos_i = new ObjectOutputStream(new Socket(ip_i, IConstant.portc).getOutputStream());
+			oos_j = new ObjectOutputStream(new Socket(ip_j, IConstant.portp).getOutputStream());
+			oos_k = new ObjectOutputStream(new Socket(ip_k, IConstant.portp).getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void set_callbackc() {
@@ -98,11 +112,11 @@ public class CNode{
 	public void send_event(String node, String msg) {
 		/*在main函数中调用该函数向node，发送消息msg*/
 		if (node.equals("i")) {
-			tPoolExecutor.execute(new Send(ip, port, sendId, deny));
+			tPoolExecutor.execute(new Send(oos_i, msg, 0));
 		}else if(node.equals("j")){
-			tPoolExecutor.execute(new Send(ip, port, sendId, deny));
+			tPoolExecutor.execute(new Send(oos_j, msg, 0));
 		}else {
-			tPoolExecutor.execute(new Send(ip, port, sendId, deny));
+			tPoolExecutor.execute(new Send(oos_k, msg, 0));
 		}
 	}
 	

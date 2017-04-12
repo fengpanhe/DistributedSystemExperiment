@@ -5,34 +5,23 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 class Send implements Runnable{
-    String sendId;
-    String sendIp;
-    int sendPort, deny;
+    String msg;
+    int deny;
     ObjectOutputStream oos = null;
-    Socket socket = null;
 
-    public Send(String ip, int port, String sendId, int deny) {
-    	this.sendId = sendId;
+    public Send(ObjectOutputStream oos, String msg, int deny) {
+    	this.msg = msg;
     	this.deny = deny;
-    	this.sendIp = ip;
-    	this.sendPort = port;
-    	try {
-			socket = new Socket(this.sendIp, this.sendPort);
-			 oos = new ObjectOutputStream(socket.getOutputStream());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-       
+    	this.oos = oos;
     }
 
 
     @Override
     public void run() {
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+            Thread.sleep(deny);
+            oos.writeObject(msg);
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
