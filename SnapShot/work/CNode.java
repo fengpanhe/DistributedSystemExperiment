@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -124,7 +126,8 @@ public class CNode{
 		receive = new ReceiveThreadManager(IConstant.portc, true);
 		new Thread(receive).start();
 	}
-	
+
+
 	public static void main(String[] args) {
 		/*接受输入:
 			ip结点的IP
@@ -132,11 +135,59 @@ public class CNode{
 			snapshot_times快照次数
 			R随机种子
 		*/
+		Scanner in = new Scanner(System.in);
+		String ip[] = new String[3];
+		int source_times;
+		int snapshot_times;
+        Random random;
+		System.out.print("请输入i的ip： ");
+		ip[0] = in.next();
+		System.out.print("请输入j的ip： ");
+		ip[1] = in.next();
+		System.out.print("请输入k的ip： ");
+		ip[2] = in.next();
+		System.out.print("资源转移次数：");
+		source_times = in.nextInt();
+		System.out.print("快照次数：");
+		snapshot_times = in.nextInt();
+		System.out.print("随机数种子：");
+		random = new Random(in.nextInt());
 
 		// 事件间隔-5ln(R)产生事件序列，方法如下
 		// 当随机数 < source_times/(source_times+snapshot_times)时，产生资源转移事件
 		// 否则，产生快照事件。
 		// 建议自己生成一个叫Event的内部类来表示，使用Event event[]数组保存事件信息
+        Event event[] = new Event[source_times + snapshot_times];
+		double R;
+		double T;
+        double source_times_rate = source_times/(source_times + snapshot_times);
+		for(int i = 0,j = 0;i < source_times || j < snapshot_times;i++, j++){
+            R = random.nextDouble();
+            T = Math.log(R) * -5;
+            Random random1 = new Random((long)T);
+            char nodes[] = {'i','j','k'};
+            if((R < source_times_rate || j >= snapshot_times) && i < source_times){
+                char sendNode = nodes[random1.nextInt(3)];
+                char recNode = 'i';
+                int sourceNum = 10;
+                if(sendNode == 'i'){
+                    char nodes1[] = {'j','k'};
+                    recNode = nodes1[random1.nextInt(2)];
+                } else if(sendNode == 'j'){
+                    char nodes1[] = {'i','k'};
+                    recNode = nodes1[random1.nextInt(2)];
+                } else if(sendNode == 'k'){
+                    char nodes1[] = {'i','j'};
+                    recNode = nodes1[random1.nextInt(2)];
+                }
+                event[i+j] = new Event(sendNode, recNode,10, (long)T);
+                i++;
+            } else{
+                event[i+j] = new Event(String.valueOf(i+j),nodes[random1.nextInt(3)],(long)T);
+                j++;
+            }
+        }
+
 
 		/*
 			这部分需要使用已经生成的event[]，向PNode发送事件，P、C结点通信使用Socket。
