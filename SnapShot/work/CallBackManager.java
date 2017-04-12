@@ -1,7 +1,5 @@
 package work;
-
 public class CallBackManager {
-
 	private static ICallBack callBack;
 	private static ICallBack callBackc;
 	
