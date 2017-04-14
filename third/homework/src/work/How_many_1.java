@@ -1,4 +1,3 @@
-
 package work;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -265,5 +264,4 @@ public class How_many_1{
 //        how.closeThread();
         how.receive.closeAllThread();
 	}
-
 }
