@@ -9,10 +9,12 @@ public class Receive implements Runnable{
     Socket socket = null;
     ObjectInputStream ois = null;
     String receive_node = null;
+    boolean level;
 
     public Receive(Socket socket, boolean level) {
         this.socket = socket;
         receive_ip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
+        this.level = level;
         if (level) {
         	if (receive_ip == CNode.ip_i) {
 				receive_node = "i";
@@ -42,7 +44,10 @@ public class Receive implements Runnable{
         while(true){
         	try {
 				String msg = (String)ois.readObject();
-				CallBackManager.getCallBack().receive_handler(receive_node, msg);
+				if (level)
+					CallBackManager.getCallBackc().receive_handler(receive_node, msg);
+				else
+					CallBackManager.getCallBack().receive_handler(receive_node, msg);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

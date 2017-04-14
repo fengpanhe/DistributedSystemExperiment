@@ -33,7 +33,7 @@ public class Receive implements Runnable{
 				src = (Integer) ois.readObject();
 				CallBackManager.getCallBackP().receive_handler(src, receive_id);
 				receive_num++;
-	            if (receive_num == 140) {
+	            if (receive_num == 70) {
 	                break;
 	            }
 			} catch (ClassNotFoundException e) {

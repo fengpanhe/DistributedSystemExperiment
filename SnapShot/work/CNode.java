@@ -178,7 +178,7 @@ public class CNode{
 	}
 	private void start_send() {
 		try {
-			oos_i = new ObjectOutputStream(new Socket(ip_i, IConstant.portc).getOutputStream());
+			oos_i = new ObjectOutputStream(new Socket(ip_i, IConstant.portp).getOutputStream());
 			oos_j = new ObjectOutputStream(new Socket(ip_j, IConstant.portp).getOutputStream());
 			oos_k = new ObjectOutputStream(new Socket(ip_k, IConstant.portp).getOutputStream());
 		} catch (IOException e) {
@@ -188,67 +188,33 @@ public class CNode{
 		Event eventTmp = null;
 		for(int i = 0; i < this.events.length; i++){
 			eventTmp = this.events[i];
-			try {
+			fPrint.format(formatStr, eventTmp.getSendNode(),eventTmp.getCode());
+		try {
 				Thread.sleep(eventTmp.getWaitTime() - prveTime);
 				prveTime = eventTmp.getWaitTime();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			try {
-				switch (this.events[i].getSendNode()){
-					case 'i':
-						oos_i.writeChars(eventTmp.getCode());
-						break;
-					case 'j':
-						oos_j.writeChars(eventTmp.getCode());
-						break;
-					case 'k':
-						oos_k.writeChars(eventTmp.getCode());
-						break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			this.send_event(String.valueOf(eventTmp.getSendNode()),eventTmp.getCode());
 		}
 	}
-	
 	private void set_callbackc() {
 		CallBackManager.setCallBackc(new ICallBack() {
 			
 			@Override
 			public void receive_handler(String node, String msg) {
 				String[] src = msg.split("\\|");
-				/*这边接收是需要收到3个节点的信息之后才能打印，所以我建议声明一个记录的类，
-				 * 然后要使用map<key, 类>来记录，
-				 * 每收到一个节点送回的快照就按快照编号key修改对应类中的一个标记，
-				 * 到时候只要从map中取出来就可以了*/
-				for(int i = 0; i < cNodeSnapshot.length; i++){
-					if(cNodeSnapshot[i].isSnapshotId(src[0])){
-						if(cNodeSnapshot[i].setRecSnapSource(node.charAt(0),msg)){
+				System.out.println("123");
+				fPrint.format(formatStr," ",msg);
+				for(int i = 0; i < cNodeSnapshot.length; i++) {
+					if (cNodeSnapshot[i].isSnapshotId(src[0])) {
+						if (cNodeSnapshot[i].setRecSnapSource(node.charAt(0), msg)) {
 							fPrint.format(formatStr,
 									cNodeSnapshot[i].getStandardSnapShot(),
 									cNodeSnapshot[i].getRecSnapShot());
 						}
 					}
 				}
-//				if (snap_all.containsKey(src[0])) {
-//					if (node.equals("i")) {
-//						//加入i的队列
-//					}else if(node.equals("j")){
-//						//加入j的队列
-//					}else {
-//						//加入k的队列
-//					}
-//				}else{
-//					if (node.equals("i")) {
-//						//加入i的队列
-//					}else if(node.equals("j")){
-//						//加入j的队列
-//					}else {
-//						//加入k的队列
-//					}
-//				}
-				
 			}
 		});
 	}
@@ -328,18 +294,24 @@ public class CNode{
 		int source_times;
 		int snapshot_times;
         int randomSeed;
-		System.out.print("请输入i的ip： ");
-		ip[0] = in.next();
-		System.out.print("请输入j的ip： ");
-		ip[1] = in.next();
-		System.out.print("请输入k的ip： ");
-		ip[2] = in.next();
-		System.out.print("资源转移次数：");
-		source_times = in.nextInt();
-		System.out.print("快照次数：");
-		snapshot_times = in.nextInt();
-		System.out.print("随机数种子：");
-		randomSeed = in.nextInt();
+//		System.out.print("请输入i的ip： ");
+//		ip[0] = in.next();
+//		System.out.print("请输入j的ip： ");
+//		ip[1] = in.next();
+//		System.out.print("请输入k的ip： ");
+//		ip[2] = in.next();
+//		System.out.print("资源转移次数：");
+//		source_times = in.nextInt();
+//		System.out.print("快照次数：");
+//		snapshot_times = in.nextInt();
+//		System.out.print("随机数种子：");
+//		randomSeed = in.nextInt();
+		ip[0] = "192.168.1.167";
+		ip[1] = "192.168.1.146";
+		ip[2] = "192.168.1.235";
+		source_times = 10;
+		snapshot_times = 3;
+		randomSeed = 43;
 		CNode cNode = new CNode(ip[0], ip[1], ip[2]);
         cNode.setEvents(source_times, snapshot_times, randomSeed);
 		System.out.print("输入y启动send： ");
