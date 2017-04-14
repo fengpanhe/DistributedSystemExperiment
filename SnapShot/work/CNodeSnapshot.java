@@ -11,7 +11,7 @@ public class CNodeSnapshot {
     private char ijk[] = {'i', 'j', 'k'};
 
 
-    private int recCount = 0;
+    private boolean recSign[] = {false,false,false};
     private int recSnapSource[] = {
             0,0,0,
             0,0,
@@ -21,7 +21,15 @@ public class CNodeSnapshot {
     public CNodeSnapshot(String snapshotId){
         this.snapshotId = snapshotId;
     }
-
+    private static int ijkIndex(char a){
+        char ijk[] = {'i','j','k'};
+        for(int i=0;i<ijk.length;i++){
+            if(a == ijk[i]){
+                return i;
+            }
+        }
+        return -1;
+    }
     public String[] snapshotEvent(char prveNode, char node, int recNode_sourceVal) {
         int prveNodeIndex = 0;
         int nodeIndex = 0;
@@ -114,14 +122,15 @@ public class CNodeSnapshot {
 
         return str;
     }
-    public Boolean setRecSnapSource(String snap){
+    public Boolean setRecSnapSource(char nodeId,String snap){
         String strings[] = snap.split("\\|");
         if(strings[0].equals(this.getSnapshotId())){
             for(int i = 0; i < this.recSnapSource.length; i++){
                 this.recSnapSource[i] += Integer.valueOf(strings[i+1]);
             }
-            this.recCount ++;
-            if(this.recCount == 3){
+            this.recSign[ijkIndex(nodeId)] = true;
+
+            if(recSign[0] && recSign[1] && recSign[2]){
                 return true;
             }
         }

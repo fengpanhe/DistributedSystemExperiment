@@ -92,7 +92,7 @@ public class CNode{
 		}
 
 		//模拟快照算法
-		int ijkSourceVal[] = {100,100,100};
+		int ijkSourceVal[] = {300,300,300};
 		Event currentEvent = null;
 		char sendNodetmp;
 		char recNodetmp;
@@ -224,7 +224,7 @@ public class CNode{
 				 * 到时候只要从map中取出来就可以了*/
 				for(int i = 0; i < cNodeSnapshot.length; i++){
 					if(cNodeSnapshot[i].isSnapshotId(src[0])){
-						if(cNodeSnapshot[i].setRecSnapSource(msg)){
+						if(cNodeSnapshot[i].setRecSnapSource(node.charAt(0),msg)){
 							fPrint.format(formatStr,
 									cNodeSnapshot[i].getStandardSnapShot(),
 									cNodeSnapshot[i].getRecSnapShot());
@@ -328,22 +328,25 @@ public class CNode{
 		int source_times;
 		int snapshot_times;
         int randomSeed;
-//		System.out.print("请输入i的ip： ");
-//		ip[0] = in.next();
-//		System.out.print("请输入j的ip： ");
-//		ip[1] = in.next();
-//		System.out.print("请输入k的ip： ");
-//		ip[2] = in.next();
+		System.out.print("请输入i的ip： ");
+		ip[0] = in.next();
+		System.out.print("请输入j的ip： ");
+		ip[1] = in.next();
+		System.out.print("请输入k的ip： ");
+		ip[2] = in.next();
 		System.out.print("资源转移次数：");
 		source_times = in.nextInt();
 		System.out.print("快照次数：");
 		snapshot_times = in.nextInt();
 		System.out.print("随机数种子：");
 		randomSeed = in.nextInt();
-
 		CNode cNode = new CNode(ip[0], ip[1], ip[2]);
-
         cNode.setEvents(source_times, snapshot_times, randomSeed);
-
+		System.out.print("输入y启动send： ");
+		String make_sure = in.next();
+		if (!make_sure.equals("y")) {
+			return;
+		}
+		cNode.start_send();
 	}
 }

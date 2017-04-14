@@ -99,7 +99,7 @@ public class PNode {
 
 			@Override
 			public void receive_handler(String node, String msg) {
-				String[] src = msg.split("|");
+				String[] src = msg.split("\\|");
 				print_logger(msg);
 				if (src[0].equals("1")) {
 					handle_srcc(src[1], src[2]);
@@ -164,7 +164,7 @@ public class PNode {
 	}
 
 	private void handle_snap(String node, String msg) {
-		String[] src = msg.split("|");
+		String[] src = msg.split("\\|");
 		if (src[0].equals("4")) {
 			String id = src[1];
 			if (!records.containsKey(id))
