@@ -24,7 +24,7 @@ public class How_many_1{
 	static String node_name, node1, node2;
 	static String ip1, ip2;
 	Integer M = 300, recordNum;
-	private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss.SSS");
 	private Formatter f = new Formatter(System.out);
     private String formatStr = "%-5s %-1s:%-5s %-1s:%-5s %-1s:%-5s"
 			+ " total:%-5s startTime:%-15s endTime:%-15s\n";
@@ -60,13 +60,8 @@ public class How_many_1{
 				}else {
 					print_log(new Date(), id, "1", "01", src, 0);
 					if (id.equals(node1)) {
-//						sendSocket1.sendEvent(M+2048, 0);
-//						tPoolExecutor.execute(sendSocket1);
                         tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,M+2048,0));
-					}
-					else {
-//						sendSocket2.sendEvent(M+2048, 0);
-//						tPoolExecutor.execute(sendSocket2);
+					}else {
                         tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,M+2048,0));
 					}
 						
@@ -188,17 +183,13 @@ public class How_many_1{
                     code = M / 5;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node1, "0", "00", code, tmp);
-//                    send1.sendEvent(code,(long) T);
                     tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,code,(long) T));
                 }else{
                     code = M / 4;
                     tmp = changeRes('-', code);
                     print_log(new Date(), node2, "0", "00", code, tmp);
-//                    send2.sendEvent(code,(long) T);
-//                    tPoolExecutor.execute(sendSocket2);
                     tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,code,(long) T));
                 }
-
                 i++;
             }
             if(time2 <= System.currentTimeMillis() && j < 10){
@@ -207,10 +198,6 @@ public class How_many_1{
                 time2 += T;
                 code = 1024;
                 startTime.add(df.format(new Date()));
-//                sendSocket1.sendEvent(code,(long) T);
-//                sendSocket2.sendEvent(code,(long) T);
-//                tPoolExecutor.execute(sendSocket1);
-//                tPoolExecutor.execute(sendSocket2);
                 tPoolExecutor.execute(new SendEvent(sendSocket1,node1,IConstant.DENY,code,(long) T));
                 tPoolExecutor.execute(new SendEvent(sendSocket2,node2,IConstant.DENY,code,(long) T));
                 j++;
@@ -261,7 +248,8 @@ public class How_many_1{
             return;
         }
         how.start_send(random);
-//        how.closeThread();
+        while(how.receive.poolExecutor.getActiveCount() != 0);
+        how.closeThread();
         how.receive.closeAllThread();
 	}
 }

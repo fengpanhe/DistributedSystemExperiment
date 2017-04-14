@@ -7,11 +7,8 @@ import java.net.UnknownHostException;
 
 class SendEvent implements Runnable{
     String sendId;
-//    String sendIp;
-//    int sendPort;
     int deny;
     ObjectOutputStream oos = null;
-//    Socket socket = null;
     Integer code;
     long waitTime;
 
@@ -20,10 +17,6 @@ class SendEvent implements Runnable{
     	this.deny = deny;
         this.code = code;
         this.waitTime = waitTime;
-//    	this.sendIp = ip;
-//    	this.sendPort = port;
-
-//			socket = new Socket(this.sendIp, this.sendPort);
         oos = socket;
 
     }
@@ -36,11 +29,6 @@ class SendEvent implements Runnable{
         }
     }
     
-//    public void sendEvent(Integer code, long waitTime){
-//        this.code = code;
-//        this.waitTime = waitTime;
-//    }
-
     @Override
     public void run() {
     	this.sendWait();

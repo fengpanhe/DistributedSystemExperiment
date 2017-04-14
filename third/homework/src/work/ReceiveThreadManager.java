@@ -10,6 +10,7 @@ public class ReceiveThreadManager implements Runnable{
 	
 	ThreadPoolExecutor poolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 	ServerSocket server;
+	int num = 0;
 	public ReceiveThreadManager() {
 		try {
 			server = new ServerSocket(IConstant.PORT);
@@ -31,12 +32,12 @@ public class ReceiveThreadManager implements Runnable{
 	@Override
 	public void run() {
 		try{
-            while (!server.isClosed()) {
+            while (num < 2) {
             	poolExecutor.execute(new Receive(server.accept()));
+            	num ++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-		
 	}
 }

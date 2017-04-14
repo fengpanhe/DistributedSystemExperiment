@@ -12,11 +12,6 @@ public class Receive implements Runnable{
         this.socket = socket;
         String clientip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
         this.receive_id = clientip.equals(How_many_1.ip1)?  How_many_1.node1 :  How_many_1.node2;
-//        try {
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
     }
     
     @Override
@@ -33,7 +28,7 @@ public class Receive implements Runnable{
 				src = (Integer) ois.readObject();
 				CallBackManager.getCallBackP().receive_handler(src, receive_id);
 				receive_num++;
-	            if (receive_num == 140) {
+	            if (receive_num == 70) {
 	                break;
 	            }
 			} catch (ClassNotFoundException e) {
@@ -41,7 +36,6 @@ public class Receive implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 		}
 
         try {
@@ -50,7 +44,5 @@ public class Receive implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
-		
-    	
     }
 }
