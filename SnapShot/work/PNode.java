@@ -23,7 +23,7 @@ public class PNode {
 	static String node_name, node1, node2;// node_name为本节点名称，node1为第一个节点名称，node2同上
 	static String ipc, ip1, ip2;// ipc为控制节点的ip，ip1为第一个节点的IP地址，ip2同上
 	ObjectOutputStream oos_c, oos_1, oos_2;
-	HashMap<String, SnapRecord> records;// 记录
+	HashMap<String, SnapRecord> records = new HashMap<>();// 记录
 	int snap_num = 0;// 每有一次快照就 +1，执行完就把snap_num - 1，用于判断是否处在snap阶段
 	private Logger logger = Logger.getLogger("log");
 	private FileHandler fileHandler;
@@ -40,7 +40,6 @@ public class PNode {
 		start_receive();
 		set_callback();
 		set_log();
-		start_send();
 	}
 
 	private void start_send() {
@@ -171,7 +170,7 @@ public class PNode {
 				records.put(id, new SnapRecord(id));
 			if (node == node1) {
 				records.get(id).received_1 = true;
-				if (!records.get(id).listen_1) {
+				if (records.get(id).src_1 == -1) {
 					records.get(id).src_1 = 0;
 					handle_snap_p(id);
 				} else {
@@ -180,7 +179,7 @@ public class PNode {
 			}
 			if (node == node2) {
 				records.get(id).received_2 = true;
-				if (!records.get(id).listen_2) {
+				if (records.get(id).src_2 == -1) {
 					records.get(id).src_2 = 0;
 					handle_snap_p(id);
 				} else {
@@ -201,10 +200,10 @@ public class PNode {
 	private void handle_srcc(String node, String src) {
 		if (node.equals(node1)) {
 			change_source(false, Integer.valueOf(src).intValue());
-			tPoolExecutor.execute(new Send(oos_1, "3" + src, deny1));
+			tPoolExecutor.execute(new Send(oos_1, "3|" + src, deny1));
 		} else {
 			change_source(false, Integer.valueOf(src).intValue());
-			tPoolExecutor.execute(new Send(oos_2, "3" + src, deny1));
+			tPoolExecutor.execute(new Send(oos_2, "3|" + src, deny1));
 		}
 	}
 
@@ -302,38 +301,44 @@ public class PNode {
 		Scanner in = new Scanner(System.in);
 		String ip[] = new String[3];
 		String target[] = new String[2];
-		System.out.print("请输入本机编号：");
-		String pc_id = in.next();
-		System.out.println("请输入控制节点C的ip：");
-		ip[0] = in.next();
-		switch (pc_id) {
-		case "i":
-			System.out.print("请输入接受者j的ip： ");
-			ip[1] = in.next();
-			target[0] = "j";
-			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
-			target[1] = "k";
-			break;
-		case "j":
-			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
-			target[0] = "i";
-			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
-			target[1] = "k";
-			break;
-		case "k":
-			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
-			target[0] = "i";
-			System.out.print("请输入接受者j的ip： ");
-			ip[2] = in.next();
-			target[1] = "j";
-			break;
-		default:
-			break;
-		}
+//		System.out.print("请输入本机编号：");
+//		String pc_id = in.next();
+//		System.out.println("请输入控制节点C的ip：");
+//		ip[0] = in.next();
+//		switch (pc_id) {
+//		case "i":
+//			System.out.print("请输入接受者j的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "j";
+//			System.out.print("请输入接受者k的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "k";
+//			break;
+//		case "j":
+//			System.out.print("请输入接受者i的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "i";
+//			System.out.print("请输入接受者k的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "k";
+//			break;
+//		case "k":
+//			System.out.print("请输入接受者i的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "i";
+//			System.out.print("请输入接受者j的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "j";
+//			break;
+//		default:
+//			break;
+//		}
+		ip[0] = "192.168.1.235";
+		ip[1] = "192.168.1.167";
+		ip[2] = "192.168.1.146";
+		target[0] = "i";
+		target[1] = "j";
+		String pc_id = "k";
 		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
 		System.out.println("参数输入完成，启动recevie");
 		System.out.println("recevie启动完成");
