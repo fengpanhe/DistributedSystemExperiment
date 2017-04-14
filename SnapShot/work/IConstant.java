@@ -9,6 +9,11 @@ public interface IConstant {
 	public int ki = 1900;
 	public int jk = 2100;
 	public int kj = 2400;
-	public int portc = 888;
-	public int portp = 999;
+	public int ijkdelay[][] = {
+			{0,1000,1600},
+			{1300,0,2100},
+			{1900,2400,0}
+	};
+	public int portc = 8888;
+	public int portp = 9999;
 }
