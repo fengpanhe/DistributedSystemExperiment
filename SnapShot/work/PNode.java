@@ -28,7 +28,7 @@ public class PNode {
 	private Logger logger = Logger.getLogger("log");
 	private FileHandler fileHandler;
 	private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
-	
+
 	public PNode(String node_name, String node1, String node2, String ipc, String ip1, String ip2) {
 		PNode.node_name = node_name;
 		PNode.node1 = node1;
@@ -124,17 +124,14 @@ public class PNode {
 	}
 
 	private void handle_end() {
-		while (tPoolExecutor.getActiveCount() != 0);
+		while (tPoolExecutor.getActiveCount() != 0)
+			;
 		tPoolExecutor.shutdown();
 		receive.closeAllThread();
 	}
 
 	private void handle_snap_p(String id) {
 		records.get(id).src = M;
-		if (!records.get(id).received_1)
-			records.get(id).listen_1 = true;
-		if (!records.get(id).received_2)
-			records.get(id).listen_2 = true;
 		String msg = "4|" + id;
 		tPoolExecutor.execute(new Send(oos_1, msg, deny1));
 		tPoolExecutor.execute(new Send(oos_2, msg, deny2));
@@ -148,9 +145,9 @@ public class PNode {
 
 		if (node_name.equals("i")) {
 			send = id + "|" + src + "|0|0|0|" + src_1 + "|0|" + src_2 + "|0|0";
-		}else if (node_name.equals("j")) {
+		} else if (node_name.equals("j")) {
 			send = id + "|0|" + src + "|0|" + src_1 + "|0|0|0|0|" + src_2;
-		}else {
+		} else {
 			send = id + "|0|0|" + src + "|0|0|" + src_1 + "|0|" + src_2 + "|0";
 		}
 		tPoolExecutor.execute(new Send(oos_c, send, 0));
@@ -159,6 +156,8 @@ public class PNode {
 
 	private void handle_snapc(String id) {
 		records.put(id, new SnapRecord(id));
+		records.get(id).listen_1 = true;
+		records.get(id).listen_2 = true;
 		handle_snap_p(id);
 	}
 
@@ -166,31 +165,21 @@ public class PNode {
 		String[] src = msg.split("\\|");
 		if (src[0].equals("4")) {
 			String id = src[1];
-			if (!records.containsKey(id))
+			if (!records.containsKey(id)) {
 				records.put(id, new SnapRecord(id));
-			if (node == node1) {
-				records.get(id).received_1 = true;
-				if (records.get(id).src_1 == -1) {
-					records.get(id).src_1 = 0;
-					handle_snap_p(id);
-				} else {
-					records.get(id).src_1 = records.get(id).temp_1;
-				}
+				if (node.equals(node1))
+					records.get(id).listen_2 = true;
+				if (node.equals(node2))
+					records.get(id).listen_1 = true;
+			} else {
+				if (node.equals(node1))
+					records.get(id).listen_1 = false;
+				if (node.equals(node2))
+					records.get(id).listen_2 = false;
 			}
-			if (node == node2) {
-				records.get(id).received_2 = true;
-				if (records.get(id).src_2 == -1) {
-					records.get(id).src_2 = 0;
-					handle_snap_p(id);
-				} else {
-					records.get(id).src_2 = records.get(id).temp_2;
-				}
-			}
-
-			if (records.get(id).src != -1 && records.get(id).src_1 != -1 && records.get(id).src_2 != -1)
+			if (!records.get(id).listen_1 && !records.get(id).listen_2)
 				handle_snap_sendc(id);
 		}
-
 		if (src[0].equals("3")) {
 			int num = Integer.parseInt(src[1]);
 			operate_records(node, num);
@@ -229,11 +218,11 @@ public class PNode {
 		for (String key : records.keySet()) {
 			if (node == node1) {
 				if (records.get(key).listen_1)
-					records.get(key).temp_1 += num;
+					records.get(key).src_1 += num;
 			}
 			if (node == node2) {
 				if (records.get(key).listen_2)
-					records.get(key).temp_2 += num;
+					records.get(key).src_2 += num;
 			}
 		}
 	}
@@ -245,20 +234,16 @@ public class PNode {
 
 	class SnapRecord {
 		String id_snap;
-		int src, src_1, src_2, temp_1, temp_2;
-		boolean listen_1, listen_2, received_1, received_2;
+		int src, src_1, src_2;
+		boolean listen_1, listen_2;
 
 		public SnapRecord(String id_snap) {
 			this.src = -1;
-			this.src_1 = -1;
-			this.src_2 = -1;
-			this.temp_1 = 0;
-			this.temp_2 = 0;
+			this.src_1 = 0;
+			this.src_2 = 0;
 			this.id_snap = id_snap;
 			this.listen_1 = false;
 			this.listen_2 = false;
-			this.received_1 = false;
-			this.received_2 = false;
 		}
 
 		public String getId_snap() {
@@ -301,44 +286,38 @@ public class PNode {
 		Scanner in = new Scanner(System.in);
 		String ip[] = new String[3];
 		String target[] = new String[2];
-//		System.out.print("请输入本机编号：");
-//		String pc_id = in.next();
-//		System.out.println("请输入控制节点C的ip：");
-//		ip[0] = in.next();
-//		switch (pc_id) {
-//		case "i":
-//			System.out.print("请输入接受者j的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "j";
-//			System.out.print("请输入接受者k的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "k";
-//			break;
-//		case "j":
-//			System.out.print("请输入接受者i的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "i";
-//			System.out.print("请输入接受者k的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "k";
-//			break;
-//		case "k":
-//			System.out.print("请输入接受者i的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "i";
-//			System.out.print("请输入接受者j的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "j";
-//			break;
-//		default:
-//			break;
-//		}
-		ip[0] = "192.168.1.235";
-		ip[1] = "192.168.1.167";
-		ip[2] = "192.168.1.146";
-		target[0] = "i";
-		target[1] = "j";
-		String pc_id = "k";
+		System.out.print("请输入本机编号：");
+		String pc_id = in.next();
+		System.out.println("请输入控制节点C的ip：");
+		ip[0] = in.next();
+		switch (pc_id) {
+		case "i":
+			System.out.print("请输入接受者j的ip： ");
+			ip[1] = in.next();
+			target[0] = "j";
+			System.out.print("请输入接受者k的ip： ");
+			ip[2] = in.next();
+			target[1] = "k";
+			break;
+		case "j":
+			System.out.print("请输入接受者i的ip： ");
+			ip[1] = in.next();
+			target[0] = "i";
+			System.out.print("请输入接受者k的ip： ");
+			ip[2] = in.next();
+			target[1] = "k";
+			break;
+		case "k":
+			System.out.print("请输入接受者i的ip： ");
+			ip[1] = in.next();
+			target[0] = "i";
+			System.out.print("请输入接受者j的ip： ");
+			ip[2] = in.next();
+			target[1] = "j";
+			break;
+		default:
+			break;
+		}
 		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
 		System.out.println("参数输入完成，启动recevie");
 		System.out.println("recevie启动完成");
