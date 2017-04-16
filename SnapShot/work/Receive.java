@@ -16,9 +16,9 @@ public class Receive implements Runnable{
         receive_ip = this.socket.getRemoteSocketAddress().toString().split(":|/")[1];
         this.level = level;
         if (level) {
-        	if (receive_ip == CNode.ip_i) {
+        	if (receive_ip.equals(CNode.ip_i)) {
 				receive_node = "i";
-			}else if (receive_ip == CNode.ip_j) {
+			}else if (receive_ip.equals(CNode.ip_j)) {
 				receive_node = "j";
 			}else {
 				receive_node = "k";
@@ -26,7 +26,7 @@ public class Receive implements Runnable{
 		}else {
 			if (socket.getPort() == IConstant.portc) {
 				receive_node = "c";
-			}else if (receive_ip == PNode.ip1) {
+			}else if (receive_ip.equals(PNode.ip1)) {
 				receive_node = PNode.node1;
 			}else {
 				receive_node = PNode.node2;

@@ -138,6 +138,7 @@ public class PNode {
 	}
 
 	private void handle_snap_sendc(String id) {
+		System.out.println("sendc");
 		String src, src_1, src_2, send;
 		src = String.valueOf(records.get(id).src);
 		src_1 = String.valueOf(records.get(id).src_1);
@@ -152,6 +153,7 @@ public class PNode {
 		}
 		tPoolExecutor.execute(new Send(oos_c, send, 0));
 		records.remove(id);
+		System.out.println("send end");
 	}
 
 	private void handle_snapc(String id) {
@@ -171,6 +173,7 @@ public class PNode {
 					records.get(id).listen_2 = true;
 				if (node.equals(node2))
 					records.get(id).listen_1 = true;
+				handle_snap_p(id);
 			} else {
 				if (node.equals(node1))
 					records.get(id).listen_1 = false;
@@ -214,7 +217,6 @@ public class PNode {
 
 	public synchronized void operate_records(String node, int num) {
 		// 操作队列
-		int size = records.size();
 		for (String key : records.keySet()) {
 			if (node == node1) {
 				if (records.get(key).listen_1)
@@ -238,7 +240,7 @@ public class PNode {
 		boolean listen_1, listen_2;
 
 		public SnapRecord(String id_snap) {
-			this.src = -1;
+			this.src = 0;
 			this.src_1 = 0;
 			this.src_2 = 0;
 			this.id_snap = id_snap;
@@ -290,6 +292,7 @@ public class PNode {
 		String pc_id = in.next();
 		System.out.println("请输入控制节点C的ip：");
 		ip[0] = in.next();
+//		ip[0] = "192.168.1.235";
 		switch (pc_id) {
 		case "i":
 			System.out.print("请输入接受者j的ip： ");
@@ -302,9 +305,11 @@ public class PNode {
 		case "j":
 			System.out.print("请输入接受者i的ip： ");
 			ip[1] = in.next();
+//			ip[1] = "192.168.1.167";
 			target[0] = "i";
 			System.out.print("请输入接受者k的ip： ");
 			ip[2] = in.next();
+//			ip[2] = "192.168.1.235";
 			target[1] = "k";
 			break;
 		case "k":
