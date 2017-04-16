@@ -103,7 +103,7 @@ public class PNode {
 				if (src[0].equals("1")) {
 					handle_srcc(src[1], src[2]);
 				} else if (src[0].equals("2")) {
-					handle_snapc(src[1]);
+					handle_snap(node,msg);
 				} else if (src[0].equals("3")) {
 					/*
 					 * 正常资源处理 如果处在快照的通道监听阶段，还要修改SnapRecord
@@ -130,8 +130,7 @@ public class PNode {
 		receive.closeAllThread();
 	}
 
-	private void handle_snap_p(String id) {
-		records.get(id).src = M;
+	private void handle_snap_sendp(String id) {
 		String msg = "4|" + id;
 		tPoolExecutor.execute(new Send(oos_1, msg, deny1));
 		tPoolExecutor.execute(new Send(oos_2, msg, deny2));
@@ -156,30 +155,41 @@ public class PNode {
 		System.out.println("send end");
 	}
 
-	private void handle_snapc(String id) {
-		records.put(id, new SnapRecord(id));
-		snap_num++;
-		records.get(id).listen_1 = true;
-		records.get(id).listen_2 = true;
-		handle_snap_p(id);
-	}
-
 	private void handle_snap(String node, String msg) {
 		String[] src = msg.split("\\|");
+		String id;
+		
+		if(node.equals("c")) {
+			id = src[1];
+			records.put(id, new SnapRecord(id));
+		snap_num++;
+
+		// 原子操作
+		records.get(id).src = M;
+		records.get(id).listen_1 = true;
+		records.get(id).listen_2 = true;
+
+		handle_snap_sendp(id);
+		}
+		
 		if (src[0].equals("4")) {
-			String id = src[1];
+			id = src[1];
 			if (!records.containsKey(id)) {
 				records.put(id, new SnapRecord(id));
 				snap_num++;
+
+				// 原子操作
+				records.get(id).src = M;
 				if (node.equals(node1))
 					records.get(id).listen_2 = true;
-				if (node.equals(node2))
+				else
 					records.get(id).listen_1 = true;
-				handle_snap_p(id);
+
+				handle_snap_sendp(id);
 			} else {
 				if (node.equals(node1))
 					records.get(id).listen_1 = false;
-				if (node.equals(node2))
+				else
 					records.get(id).listen_2 = false;
 			}
 			if (!records.get(id).listen_1 && !records.get(id).listen_2)
@@ -291,40 +301,45 @@ public class PNode {
 		String ip[] = new String[3];
 		String target[] = new String[2];
 		System.out.print("请输入本机编号：");
-//		String pc_id = in.next();
-//		System.out.println("请输入控制节点C的ip：");
-//		ip[0] = in.next();
-//		switch (pc_id) {
-//		case "i":
-//			System.out.print("请输入接受者j的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "j";
-//			System.out.print("请输入接受者k的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "k";
-//			break;
-//		case "j":
-//			System.out.print("请输入接受者i的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "i";
-//			System.out.print("请输入接受者k的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "k";
-//			break;
-//		case "k":
-//			System.out.print("请输入接受者i的ip： ");
-//			ip[1] = in.next();
-//			target[0] = "i";
-//			System.out.print("请输入接受者j的ip： ");
-//			ip[2] = in.next();
-//			target[1] = "j";
-//			break;
-//		default:
-//			break;
-//		}
-//		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
-		PNode pNode = new PNode("k", "i", "j","192.168.1.235", "192.168.1.167", "192.168.1.146");
-
+		String pc_id = in.next();
+		System.out.println("请输入控制节点C的ip：");
+		// ip[0] = in.next();
+		ip[0] = "192.168.1.235";
+		switch (pc_id) {
+		case "i":
+			System.out.print("请输入接受者j的ip： ");
+			// ip[1] = in.next();
+			ip[1] = "192.168.1.146";
+			target[0] = "j";
+			System.out.print("请输入接受者k的ip： ");
+			// ip[2] = in.next();
+			ip[2] = "192.168.1.235";
+			target[1] = "k";
+			break;
+		case "j":
+			System.out.print("请输入接受者i的ip： ");
+			// ip[1] = in.next();
+			ip[1] = "192.168.1.167";
+			target[0] = "i";
+			System.out.print("请输入接受者k的ip： ");
+			// ip[2] = in.next();
+			ip[2] = "192.168.1.235";
+			target[1] = "k";
+			break;
+		case "k":
+			System.out.print("请输入接受者i的ip： ");
+			// ip[1] = in.next();
+			ip[1] = "192.168.1.167";
+			target[0] = "i";
+			System.out.print("请输入接受者j的ip： ");
+			// ip[2] = in.next();
+			ip[2] = "192.168.1.146";
+			target[1] = "j";
+			break;
+		default:
+			break;
+		}
+		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
 		System.out.println("参数输入完成，启动recevie");
 		System.out.println("recevie启动完成");
 		System.out.print("输入y启动send： ");
