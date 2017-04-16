@@ -291,33 +291,37 @@ public class PNode {
 		System.out.print("请输入本机编号：");
 		String pc_id = in.next();
 		System.out.println("请输入控制节点C的ip：");
-		ip[0] = in.next();
-//		ip[0] = "192.168.1.235";
+//		ip[0] = in.next();
+		ip[0] = "192.168.1.235";
 		switch (pc_id) {
 		case "i":
 			System.out.print("请输入接受者j的ip： ");
-			ip[1] = in.next();
+//			ip[1] = in.next();
+			ip[1] = "192.168.1.146";
 			target[0] = "j";
 			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
+//			ip[2] = in.next();
+			ip[2] = "192.168.1.235";
 			target[1] = "k";
 			break;
 		case "j":
 			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
-//			ip[1] = "192.168.1.167";
+//			ip[1] = in.next();
+			ip[1] = "192.168.1.167";
 			target[0] = "i";
 			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
-//			ip[2] = "192.168.1.235";
+//			ip[2] = in.next();
+			ip[2] = "192.168.1.235";
 			target[1] = "k";
 			break;
 		case "k":
 			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
+//			ip[1] = in.next();
+			ip[1] = "192.168.1.167";
 			target[0] = "i";
 			System.out.print("请输入接受者j的ip： ");
-			ip[2] = in.next();
+//			ip[2] = in.next();
+			ip[2] = "192.168.1.146";
 			target[1] = "j";
 			break;
 		default:
