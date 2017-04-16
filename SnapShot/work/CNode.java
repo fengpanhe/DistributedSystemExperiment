@@ -271,7 +271,11 @@ public class CNode{
 			tPoolExecutor.execute(new Send(oos_i, msg, 0));
 		}else if(node.equals("j")){
 			tPoolExecutor.execute(new Send(oos_j, msg, 0));
-		}else {
+		}else if(node.equals("k")){
+			tPoolExecutor.execute(new Send(oos_k, msg, 0));
+		}else{
+			tPoolExecutor.execute(new Send(oos_i, msg, 0));
+			tPoolExecutor.execute(new Send(oos_j, msg, 0));
 			tPoolExecutor.execute(new Send(oos_k, msg, 0));
 		}
 	}

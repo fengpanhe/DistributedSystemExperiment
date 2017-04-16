@@ -171,6 +171,7 @@ public class PNode {
 					records.get(id).listen_2 = true;
 				if (node.equals(node2))
 					records.get(id).listen_1 = true;
+				handle_snap_p(id);
 			} else {
 				if (node.equals(node1))
 					records.get(id).listen_1 = false;
@@ -287,38 +288,40 @@ public class PNode {
 		String ip[] = new String[3];
 		String target[] = new String[2];
 		System.out.print("请输入本机编号：");
-		String pc_id = in.next();
-		System.out.println("请输入控制节点C的ip：");
-		ip[0] = in.next();
-		switch (pc_id) {
-		case "i":
-			System.out.print("请输入接受者j的ip： ");
-			ip[1] = in.next();
-			target[0] = "j";
-			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
-			target[1] = "k";
-			break;
-		case "j":
-			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
-			target[0] = "i";
-			System.out.print("请输入接受者k的ip： ");
-			ip[2] = in.next();
-			target[1] = "k";
-			break;
-		case "k":
-			System.out.print("请输入接受者i的ip： ");
-			ip[1] = in.next();
-			target[0] = "i";
-			System.out.print("请输入接受者j的ip： ");
-			ip[2] = in.next();
-			target[1] = "j";
-			break;
-		default:
-			break;
-		}
-		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
+//		String pc_id = in.next();
+//		System.out.println("请输入控制节点C的ip：");
+//		ip[0] = in.next();
+//		switch (pc_id) {
+//		case "i":
+//			System.out.print("请输入接受者j的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "j";
+//			System.out.print("请输入接受者k的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "k";
+//			break;
+//		case "j":
+//			System.out.print("请输入接受者i的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "i";
+//			System.out.print("请输入接受者k的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "k";
+//			break;
+//		case "k":
+//			System.out.print("请输入接受者i的ip： ");
+//			ip[1] = in.next();
+//			target[0] = "i";
+//			System.out.print("请输入接受者j的ip： ");
+//			ip[2] = in.next();
+//			target[1] = "j";
+//			break;
+//		default:
+//			break;
+//		}
+//		PNode pNode = new PNode(pc_id, target[0], target[1], ip[0], ip[1], ip[2]);
+		PNode pNode = new PNode("k", "i", "j","192.168.1.235", "192.168.1.167", "192.168.1.146");
+
 		System.out.println("参数输入完成，启动recevie");
 		System.out.println("recevie启动完成");
 		System.out.print("输入y启动send： ");
