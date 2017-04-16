@@ -38,66 +38,76 @@ public class CNode{
 		return -1;
 	}
 	public void setEvents(int source_times, int snapshot_times, int randomSeed){
-		this.events = new Event[source_times + snapshot_times + 1];
-		this.cNodeSnapshot = new CNodeSnapshot[snapshot_times + 1];
+		this.events = new Event[source_times + snapshot_times ];
+		this.cNodeSnapshot = new CNodeSnapshot[snapshot_times];
 
+//		Random random = new Random(randomSeed);
+//		double R;
+//		double T;
+//		double source_times_rate = (double)source_times/(source_times + snapshot_times);
+//		long timeSum = 0;
+//		//产生所有事件
+//		char nodes[] = {'i','j','k'};
+//		for(int i = 0,j = 0, k = 0; k < source_times + snapshot_times; k++){
+//			R = random.nextDouble();
+//			T = -Math.log(R) * 5000;
+//			timeSum = timeSum + (long) T;
+//			Random random1 = new Random((long)T);
+//			if((R < source_times_rate || j >= snapshot_times) && i < source_times){
+//				// 资源转移事件
+//				char sendNode = nodes[random1.nextInt(3)];
+//				char recNode = 'i';
+//				int sourceNum = 10;
+//				if(sendNode == 'i'){
+//					char nodes1[] = {'j','k'};
+//					recNode = nodes1[random1.nextInt(2)];
+//				} else if(sendNode == 'j'){
+//					char nodes1[] = {'i','k'};
+//					recNode = nodes1[random1.nextInt(2)];
+//				} else if(sendNode == 'k'){
+//					char nodes1[] = {'i','j'};
+//					recNode = nodes1[random1.nextInt(2)];
+//				}
+//				this.events[k] = new Event(sendNode, recNode,10, timeSum);
+//				i++;
+//			} else if(j < snapshot_times){
+//				// 快照事件
+//				this.events[k] = new Event(String.valueOf(j),nodes[random1.nextInt(3)], 'c',timeSum);
+//				this.cNodeSnapshot[j] = new CNodeSnapshot(String.valueOf(j));
+//				j++;
+//			}
+//		}
+//		this.events[this.events.length - 1] = new Event(timeSum);
+        this.events[0] = new Event('k','i',63,0);
+        this.events[1] = new Event('k','i',7,1574);
+        this.events[2] = new Event('j','i',62,2930);
+        this.events[3] = new Event('k','j',14,15502);
+        this.events[4] = new Event("1",'i','c',19970);
+        this.cNodeSnapshot[0] = new CNodeSnapshot(String.valueOf(1));
+        this.events[5] = new Event('j','k',42,20701);
+        this.events[6] = new Event("2",'j','c',34482);
+        this.cNodeSnapshot[1] = new CNodeSnapshot(String.valueOf(2));
+        this.events[7] = new Event('j','i',7,35010);
+        this.events[8] = new Event('k','j',7,38325);
+        this.events[9] = new Event('i','j',233,41779);
 
-		Random random = new Random(randomSeed);
-		double R;
-		double T;
-		double source_times_rate = (double)source_times/(source_times + snapshot_times);
-		long timeSum = 0;
-		//产生所有事件
-		char nodes[] = {'i','j','k'};
-		for(int i = 0,j = 0, k = 0; k < source_times + snapshot_times; k++){
-			R = random.nextDouble();
-			T = -Math.log(R) * 5000;
-			timeSum = timeSum + (long) T;
-			Random random1 = new Random((long)T);
-			if((R < source_times_rate || j >= snapshot_times) && i < source_times){
-				// 资源转移事件
-				char sendNode = nodes[random1.nextInt(3)];
-				char recNode = 'i';
-				int sourceNum = 10;
-				if(sendNode == 'i'){
-					char nodes1[] = {'j','k'};
-					recNode = nodes1[random1.nextInt(2)];
-				} else if(sendNode == 'j'){
-					char nodes1[] = {'i','k'};
-					recNode = nodes1[random1.nextInt(2)];
-				} else if(sendNode == 'k'){
-					char nodes1[] = {'i','j'};
-					recNode = nodes1[random1.nextInt(2)];
-				}
-				this.events[k] = new Event(sendNode, recNode,10, timeSum);
-				i++;
-			} else if(j < snapshot_times){
-				// 快照事件
-				this.events[k] = new Event(String.valueOf(j),nodes[random1.nextInt(3)], 'c',timeSum);
-				this.cNodeSnapshot[j] = new CNodeSnapshot(String.valueOf(j));
-				j++;
-			}
-		}
-		this.events[this.events.length - 1] = new Event(timeSum);
-		this.setcNodeSnapshot();
+        this.setcNodeSnapshot();
 	}
 	private void setcNodeSnapshot(){
 		PriorityQueue<Event> eventQueue = new PriorityQueue<Event>(this.events.length, new ComparatorBytime());
 		//把事件加入到优先级队列
-		for(int i = 0; i < this.events.length; i++){
+		for(int i = 0; i < this.events.length -1; i++){
 			eventQueue.add(this.events[i]);
-//			System.out.println("#" + i + "time:" + this.events[i].getWaitTime() +
-//					"  sendId:" + this.events[i].getSendNode() +
-//					"  code:" + this.events[i].getCode());
 		}
 
 		//模拟快照算法
 		int ijkSourceVal[] = {300,300,300};
-		Event currentEvent = null;
+		Event currentEvent = eventQueue.poll();
+		long currentTime = 10000;
 		char sendNodetmp;
 		char recNodetmp;
-		currentEvent = eventQueue.poll();
 		while (currentEvent != null) {
+		    currentTime = currentEvent.getWaitTime();
 //			System.out.println("time:" + currentEvent.getWaitTime() +
 //					"  sendId:" + currentEvent.getSendNode() +
 //					"  code:" + currentEvent.getCode());
@@ -130,6 +140,7 @@ public class CNode{
 
 					break;
 				case 2:
+
 					//快照事件
 					char snapPrveNode = currentEvent.getSnapPrevNode();
 					sendNodetmp = currentEvent.getSendNode();
@@ -170,6 +181,8 @@ public class CNode{
 			}
 			currentEvent = eventQueue.poll();
 		}
+		this.events[this.events.length - 1] = new Event(currentTime + 1000);
+
 		for(int i = 0; i < this.cNodeSnapshot.length; i++){
 			if(this.cNodeSnapshot[i] != null){
 				System.out.println(this.cNodeSnapshot[i].getStandardSnapShot());
@@ -204,9 +217,9 @@ public class CNode{
 			@Override
 			public void receive_handler(String node, String msg) {
 				String[] src = msg.split("\\|");
-				System.out.println("123");
 				fPrint.format(formatStr," ",msg);
 				for(int i = 0; i < cNodeSnapshot.length; i++) {
+
 					if (cNodeSnapshot[i].isSnapshotId(src[0])) {
 						if (cNodeSnapshot[i].setRecSnapSource(node.charAt(0), msg)) {
 							fPrint.format(formatStr,
@@ -313,8 +326,8 @@ public class CNode{
 		ip[0] = "192.168.1.167";
 		ip[1] = "192.168.1.146";
 		ip[2] = "192.168.1.235";
-		source_times = 10;
-		snapshot_times = 3;
+		source_times = 8;
+		snapshot_times = 2;
 		randomSeed = 43;
 		CNode cNode = new CNode(ip[0], ip[1], ip[2]);
         cNode.setEvents(source_times, snapshot_times, randomSeed);

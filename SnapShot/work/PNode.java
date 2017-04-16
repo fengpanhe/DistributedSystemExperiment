@@ -138,6 +138,7 @@ public class PNode {
 	}
 
 	private void handle_snap_sendc(String id) {
+		System.out.println("sendc");
 		String src, src_1, src_2, send;
 		src = String.valueOf(records.get(id).src);
 		src_1 = String.valueOf(records.get(id).src_1);
@@ -152,10 +153,12 @@ public class PNode {
 		}
 		tPoolExecutor.execute(new Send(oos_c, send, 0));
 		records.remove(id);
+		System.out.println("send end");
 	}
 
 	private void handle_snapc(String id) {
 		records.put(id, new SnapRecord(id));
+		snap_num++;
 		records.get(id).listen_1 = true;
 		records.get(id).listen_2 = true;
 		handle_snap_p(id);
@@ -167,6 +170,7 @@ public class PNode {
 			String id = src[1];
 			if (!records.containsKey(id)) {
 				records.put(id, new SnapRecord(id));
+				snap_num++;
 				if (node.equals(node1))
 					records.get(id).listen_2 = true;
 				if (node.equals(node2))
@@ -215,7 +219,6 @@ public class PNode {
 
 	public synchronized void operate_records(String node, int num) {
 		// 操作队列
-		int size = records.size();
 		for (String key : records.keySet()) {
 			if (node == node1) {
 				if (records.get(key).listen_1)
@@ -239,7 +242,7 @@ public class PNode {
 		boolean listen_1, listen_2;
 
 		public SnapRecord(String id_snap) {
-			this.src = -1;
+			this.src = 0;
 			this.src_1 = 0;
 			this.src_2 = 0;
 			this.id_snap = id_snap;
