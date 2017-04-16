@@ -230,11 +230,11 @@ public class PNode {
 	public synchronized void operate_records(String node, int num) {
 		// 操作队列
 		for (String key : records.keySet()) {
-			if (node == node1) {
+			if (node.equals(node1)) {
 				if (records.get(key).listen_1)
 					records.get(key).src_1 += num;
 			}
-			if (node == node2) {
+			else {
 				if (records.get(key).listen_2)
 					records.get(key).src_2 += num;
 			}
