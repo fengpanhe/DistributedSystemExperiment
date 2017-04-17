@@ -1,4 +1,3 @@
-
 package work;
 
 import java.io.IOException;
@@ -6,8 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.FileHandler;
@@ -16,15 +15,17 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class PNode {
-	int M = 300;
-	ReceiveThreadManager receive;// 接受线程管理
-	int deny1, deny2;
-	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();// 线程池管理发送线程
+	private int M = 300;
+	private int deny1, deny2;
+	private ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();// 线程池管理发送线程
 	static String node_name, node1, node2;// node_name为本节点名称，node1为第一个节点名称，node2同上
 	static String ipc, ip1, ip2;// ipc为控制节点的ip，ip1为第一个节点的IP地址，ip2同上
-	ObjectOutputStream oos_c, oos_1, oos_2;
-	HashMap<String, SnapRecord> records = new HashMap<>();// 记录
-	int snap_num = 0;// 每有一次快照就 +1，执行完就把snap_num - 1，用于判断是否处在snap阶段
+	private Boolean lock_M = new Boolean(false), lock_snapnum = new Boolean(false);//锁
+	private ReceiveThreadManager receive;// 接受线程管理
+	private ObjectOutputStream oos_c, oos_1, oos_2;
+	private ConcurrentHashMap<String, SnapRecord> records = new ConcurrentHashMap<>();
+//	private HashMap<String, SnapRecord> records = new HashMap<>();// 记录
+	private int snap_num = 0;// 每有一次快照就 +1，执行完就把snap_num - 1，用于判断是否处在snap阶段
 	private Logger logger = Logger.getLogger("log");
 	private FileHandler fileHandler;
 	private SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -42,6 +43,7 @@ public class PNode {
 		set_log();
 	}
 
+	@SuppressWarnings("resource")
 	private void start_send() {
 		try {
 			oos_c = new ObjectOutputStream(new Socket(ipc, IConstant.portc).getOutputStream());
@@ -105,16 +107,10 @@ public class PNode {
 				} else if (src[0].equals("2")) {
 					handle_snap(node,msg);
 				} else if (src[0].equals("3")) {
-					/*
-					 * 正常资源处理 如果处在快照的通道监听阶段，还要修改SnapRecord
-					 */
-					handle_source(src[1]);
+					handle_srcp(src[1]);
 					if (snap_num != 0)
 						handle_snap(node, msg);
 				} else if (src[0].equals("4")) {
-					/*
-					 * 如果是快照消息 根据自己是否记录过了自己的资源来监听通道
-					 */
 					handle_snap(node, msg);
 				} else if (src[0].equals("5")) {
 					handle_end();
@@ -124,8 +120,7 @@ public class PNode {
 	}
 
 	private void handle_end() {
-		while (tPoolExecutor.getActiveCount() != 0)
-			;
+		while (tPoolExecutor.getActiveCount() != 0);
 		tPoolExecutor.shutdown();
 		receive.closeAllThread();
 	}
@@ -137,7 +132,6 @@ public class PNode {
 	}
 
 	private void handle_snap_sendc(String id) {
-		System.out.println("sendc");
 		String src, src_1, src_2, send;
 		src = String.valueOf(records.get(id).src);
 		src_1 = String.valueOf(records.get(id).src_1);
@@ -152,39 +146,42 @@ public class PNode {
 		}
 		tPoolExecutor.execute(new Send(oos_c, send, 0));
 		records.remove(id);
-		System.out.println("send end");
+		synchronized (lock_snapnum) {
+			snap_num --;
+		}
 	}
 
 	private void handle_snap(String node, String msg) {
 		String[] src = msg.split("\\|");
-		String id;
-		
+		String id = src[1];
 		if(node.equals("c")) {
-			id = src[1];
-			records.put(id, new SnapRecord(id));
-		snap_num++;
-
-		// 原子操作
-		records.get(id).src = M;
-		records.get(id).listen_1 = true;
-		records.get(id).listen_2 = true;
-
-		handle_snap_sendp(id);
+			// 原子操作
+			synchronized (lock_M) {
+				records.put(id, new SnapRecord(id));
+				records.get(id).src = M;
+				records.get(id).listen_1 = true;
+				records.get(id).listen_2 = true;
+				synchronized (lock_snapnum) {
+					snap_num++;
+				}
+			}
+			handle_snap_sendp(id);
 		}
 		
 		if (src[0].equals("4")) {
-			id = src[1];
 			if (!records.containsKey(id)) {
-				records.put(id, new SnapRecord(id));
-				snap_num++;
-
 				// 原子操作
-				records.get(id).src = M;
-				if (node.equals(node1))
-					records.get(id).listen_2 = true;
-				else
-					records.get(id).listen_1 = true;
-
+				synchronized (lock_M) {
+					records.put(id, new SnapRecord(id));
+					records.get(id).src = M;
+					if (node.equals(node1))
+						records.get(id).listen_2 = true;
+					else
+						records.get(id).listen_1 = true;
+					synchronized (lock_snapnum) {
+						snap_num++;
+					}
+				}
 				handle_snap_sendp(id);
 			} else {
 				if (node.equals(node1))
@@ -196,45 +193,44 @@ public class PNode {
 				handle_snap_sendc(id);
 		}
 		if (src[0].equals("3")) {
-			int num = Integer.parseInt(src[1]);
+			int num = Integer.parseInt(id);
 			operate_records(node, num);
 		}
 	}
 
 	private void handle_srcc(String node, String src) {
 		if (node.equals(node1)) {
-			change_source(false, Integer.valueOf(src).intValue());
+			change_src(false, Integer.valueOf(src).intValue());
 			tPoolExecutor.execute(new Send(oos_1, "3|" + src, deny1));
 		} else {
-			change_source(false, Integer.valueOf(src).intValue());
+			change_src(false, Integer.valueOf(src).intValue());
 			tPoolExecutor.execute(new Send(oos_2, "3|" + src, deny1));
 		}
 	}
 
-	private void handle_source(String src) {
-		change_source(true, Integer.valueOf(src).intValue());
+	private void handle_srcp(String src) {
+		change_src(true, Integer.valueOf(src).intValue());
 	}
 
-	private synchronized void change_source(boolean op, int intValue) {
-		if (op) {
-			M += intValue;
-		} else {
-			M -= intValue;
-		}
+	private void change_src(boolean op, int intValue) {
+		synchronized (lock_M) {
+			if (op)
+					M += intValue;
+			else 
+					M -= intValue;
+			}
 	}
 
 	private synchronized void print_logger(String msg) {
 		logger.info(msg);
 	}
 
-	public synchronized void operate_records(String node, int num) {
-		// 操作队列
+	public void operate_records(String node, int num) {
 		for (String key : records.keySet()) {
 			if (node.equals(node1)) {
 				if (records.get(key).listen_1)
 					records.get(key).src_1 += num;
-			}
-			else {
+			} else {
 				if (records.get(key).listen_2)
 					records.get(key).src_2 += num;
 			}
@@ -345,8 +341,10 @@ public class PNode {
 		System.out.print("输入y启动send： ");
 		String make_sure = in.next();
 		if (!make_sure.equals("y")) {
+			in.close();
 			return;
 		}
+		in.close();
 		pNode.start_send();
 	}
 

@@ -1,9 +1,5 @@
 package work;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 /**
  * Created by he on 17-4-12.
  */
