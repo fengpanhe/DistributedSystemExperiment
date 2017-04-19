@@ -152,6 +152,7 @@ public class PNode {
 	}
 
 	private void handle_snap(String node, String msg) {
+		System.out.println("test");
 		String[] src = msg.split("\\|");
 		String id = src[1];
 		if(node.equals("c")) {
@@ -300,7 +301,7 @@ public class PNode {
 		String pc_id = in.next();
 		System.out.println("请输入控制节点C的ip：");
 		// ip[0] = in.next();
-		ip[0] = "192.168.1.235";
+		ip[0] = "192.168.1.244";
 		switch (pc_id) {
 		case "i":
 			System.out.print("请输入接受者j的ip： ");
@@ -309,7 +310,7 @@ public class PNode {
 			target[0] = "j";
 			System.out.print("请输入接受者k的ip： ");
 			// ip[2] = in.next();
-			ip[2] = "192.168.1.235";
+			ip[2] = "192.168.1.244";
 			target[1] = "k";
 			break;
 		case "j":
@@ -319,7 +320,7 @@ public class PNode {
 			target[0] = "i";
 			System.out.print("请输入接受者k的ip： ");
 			// ip[2] = in.next();
-			ip[2] = "192.168.1.235";
+			ip[2] = "192.168.1.244";
 			target[1] = "k";
 			break;
 		case "k":

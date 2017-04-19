@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class CNode{
 	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 	ReceiveThreadManager receive;
-	HashMap<String, Snap> snap_all;
+//	HashMap<String, Snap> snap_all;
 	static String ip_i, ip_j, ip_k;
 	ObjectOutputStream oos_i, oos_j, oos_k;
 	private Event events[] = null;
@@ -104,8 +104,8 @@ public class CNode{
 		int ijkSourceVal[] = {300,300,300};
 		Event currentEvent = eventQueue.poll();
 		long currentTime = 10000;
-		char sendNodetmp;
-		char recNodetmp;
+		char sendNodeTmp;
+		char recNodeTmp;
 		while (currentEvent != null) {
 		    currentTime = currentEvent.getWaitTime();
 //			System.out.println("time:" + currentEvent.getWaitTime() +
@@ -117,23 +117,23 @@ public class CNode{
 			switch (codeHead){
 				case 1:
 					//资源转移事件
-					sendNodetmp = currentEvent.getSendNode();
+                    sendNodeTmp = currentEvent.getSendNode();
 					char sourceAction = currentEvent.getSourceAction();
-					recNodetmp = code[1].charAt(0);
+					recNodeTmp = code[1].charAt(0);
 					int sourceVal = Integer.valueOf(code[2]);
 					//更新资源量
 					if(sourceAction == 's'){
-						ijkSourceVal[ijkIndex(sendNodetmp)] -= sourceVal;
-						eventQueue.add(new Event(sendNodetmp,
-								recNodetmp, sourceVal,
+						ijkSourceVal[ijkIndex(sendNodeTmp)] -= sourceVal;
+						eventQueue.add(new Event(sendNodeTmp,
+								recNodeTmp, sourceVal,
 								currentEvent.getWaitTime() +
-										IConstant.ijkdelay[ijkIndex(sendNodetmp)][ijkIndex(recNodetmp)],'r'));
+										IConstant.ijkdelay[ijkIndex(sendNodeTmp)][ijkIndex(recNodeTmp)],'r'));
 					} else {
-						ijkSourceVal[ijkIndex(recNodetmp)] += sourceVal;
+						ijkSourceVal[ijkIndex(recNodeTmp)] += sourceVal;
 						//更新快照
-						for(int i = 0; i < this.cNodeSnapshot.length; i++){
-							if(this.cNodeSnapshot[i] != null) {
-								this.cNodeSnapshot[i].sourceEvent(sendNodetmp, recNodetmp, sourceVal);
+						for(CNodeSnapshot element:this.cNodeSnapshot){
+							if(element != null) {
+								element.sourceEvent(sendNodeTmp, recNodeTmp, sourceVal);
 							}
 						}
 					}
@@ -142,34 +142,27 @@ public class CNode{
 				case 2:
 
 					//快照事件
-					char snapPrveNode = currentEvent.getSnapPrevNode();
-					sendNodetmp = currentEvent.getSendNode();
+					char snapLastNode = currentEvent.getSnapPrevNode();
+                    sendNodeTmp = currentEvent.getSendNode();
 					String snapID = code[1];
-					int nodeSourceVal = 0;
-					nodeSourceVal = ijkSourceVal[this.ijkIndex(sendNodetmp)];
-//					for(int i = 0; i < ijkNode.length; i++){
-//						if(sendNodetmp == ijkNode[i]){
-//							nodeSourceVal = ijkSourceVal[i];
-//						}
-//					}
+					int nodeSourceVal = ijkSourceVal[ijkIndex(sendNodeTmp)];
 					//快照
-					String strtmp[] = null;
-					for(int i = 0; i < this.cNodeSnapshot.length; i++){
-						if(this.cNodeSnapshot[i].isSnapshotId(snapID)){
-							strtmp = this.cNodeSnapshot[i].snapshotEvent(snapPrveNode, sendNodetmp, nodeSourceVal);
-//							System.out.println(this.cNodeSnapshot[i].getStandardSnapShot());
-							if(strtmp != null){
+					String strTmp[];
+					for(CNodeSnapshot element:this.cNodeSnapshot){
+						if(element.isSnapshotId(snapID)){
+                            strTmp = element.snapshotEvent(snapLastNode, sendNodeTmp, nodeSourceVal);
+							if(strTmp != null){
 								eventQueue.add(
 										new Event(snapID,
-												strtmp[0].charAt(0),
-												strtmp[4].charAt(0),
-												currentEvent.getWaitTime() + Integer.valueOf(strtmp[1]))
+                                                strTmp[0].charAt(0),
+                                                strTmp[4].charAt(0),
+												currentEvent.getWaitTime() + Integer.valueOf(strTmp[1]))
 								);
 								eventQueue.add(
 										new Event(snapID,
-												strtmp[2].charAt(0),
-												strtmp[4].charAt(0),
-												currentEvent.getWaitTime() + Integer.valueOf(strtmp[3]))
+                                                strTmp[2].charAt(0),
+                                                strTmp[4].charAt(0),
+												currentEvent.getWaitTime() + Integer.valueOf(strTmp[3]))
 								);
 							}
 							break;
@@ -183,9 +176,9 @@ public class CNode{
 		}
 		this.events[this.events.length - 1] = new Event(currentTime + 1000);
 
-		for(int i = 0; i < this.cNodeSnapshot.length; i++){
-			if(this.cNodeSnapshot[i] != null){
-				System.out.println(this.cNodeSnapshot[i].getStandardSnapShot());
+		for(CNodeSnapshot snapshot:this.cNodeSnapshot){
+			if(snapshot != null){
+				System.out.println(snapshot.getStandardSnapShot());
 			}
 		}
 	}
@@ -197,18 +190,16 @@ public class CNode{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		long prveTime = 0;
-		Event eventTmp = null;
-		for(int i = 0; i < this.events.length; i++){
-			eventTmp = this.events[i];
-			fPrint.format(formatStr, eventTmp.getSendNode(),eventTmp.getCode());
-		try {
-				Thread.sleep(eventTmp.getWaitTime() - prveTime);
-				prveTime = eventTmp.getWaitTime();
+		long lastTime = 0;
+		for(Event event:this.events){
+			fPrint.format(formatStr, event.getSendNode(),event.getCode());
+		    try {
+				Thread.sleep(event.getWaitTime() - lastTime);
+                lastTime = event.getWaitTime();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			this.send_event(String.valueOf(eventTmp.getSendNode()),eventTmp.getCode());
+			this.send_event(String.valueOf(event.getSendNode()),event.getCode());
 		}
 	}
 	private void set_callbackc() {
@@ -218,13 +209,11 @@ public class CNode{
 			public void receive_handler(String node, String msg) {
 				String[] src = msg.split("\\|");
 				fPrint.format(formatStr," ",msg);
-				for(int i = 0; i < cNodeSnapshot.length; i++) {
-
-					if (cNodeSnapshot[i].isSnapshotId(src[0])) {
-						if (cNodeSnapshot[i].setRecSnapSource(node.charAt(0), msg)) {
-							fPrint.format(formatStr,
-									cNodeSnapshot[i].getStandardSnapShot(),
-									cNodeSnapshot[i].getRecSnapShot());
+				for(CNodeSnapshot snapshot:cNodeSnapshot) {
+					if (snapshot.isSnapshotId(src[0])) {
+						if (snapshot.setRecSnapSource(node.charAt(0), msg)) {
+							fPrint.format(formatStr, snapshot.getStandardSnapShot(),
+                                    snapshot.getRecSnapShot());
 						}
 					}
 				}
@@ -232,53 +221,53 @@ public class CNode{
 		});
 	}
 	
-	class Snap{
-		/*
-		 * 具体要使用那些你要考虑清楚，我只写一些我觉得需要的
-		 *  不够你再加
-		 */
-		String snap_i, snap_j, snap_k;
-		boolean record_i = false, record_j = false, record_k = false;
-		public String getSnap_i() {
-			return snap_i;
-		}
-		public void setSnap_i(String snap_i) {
-			this.snap_i = snap_i;
-		}
-		public String getSnap_j() {
-			return snap_j;
-		}
-		public void setSnap_j(String snap_j) {
-			this.snap_j = snap_j;
-		}
-		public String getSnap_k() {
-			return snap_k;
-		}
-		public void setSnap_k(String snap_k) {
-			this.snap_k = snap_k;
-		}
-		public boolean isRecord_i() {
-			return record_i;
-		}
-		public void setRecord_i(boolean record_i) {
-			this.record_i = record_i;
-		}
-		public boolean isRecord_j() {
-			return record_j;
-		}
-		public void setRecord_j(boolean record_j) {
-			this.record_j = record_j;
-		}
-		public boolean isRecord_k() {
-			return record_k;
-		}
-		public void setRecord_k(boolean record_k) {
-			this.record_k = record_k;
-		}
-
-	}
+//	class Snap{
+//		/*
+//		 * 具体要使用那些你要考虑清楚，我只写一些我觉得需要的
+//		 *  不够你再加
+//		 */
+//		String snap_i, snap_j, snap_k;
+//		boolean record_i = false, record_j = false, record_k = false;
+//		public String getSnap_i() {
+//			return snap_i;
+//		}
+//		public void setSnap_i(String snap_i) {
+//			this.snap_i = snap_i;
+//		}
+//		public String getSnap_j() {
+//			return snap_j;
+//		}
+//		public void setSnap_j(String snap_j) {
+//			this.snap_j = snap_j;
+//		}
+//		public String getSnap_k() {
+//			return snap_k;
+//		}
+//		public void setSnap_k(String snap_k) {
+//			this.snap_k = snap_k;
+//		}
+//		public boolean isRecord_i() {
+//			return record_i;
+//		}
+//		public void setRecord_i(boolean record_i) {
+//			this.record_i = record_i;
+//		}
+//		public boolean isRecord_j() {
+//			return record_j;
+//		}
+//		public void setRecord_j(boolean record_j) {
+//			this.record_j = record_j;
+//		}
+//		public boolean isRecord_k() {
+//			return record_k;
+//		}
+//		public void setRecord_k(boolean record_k) {
+//			this.record_k = record_k;
+//		}
+//
+//	}
 	
-	public void send_event(String node, String msg) {
+	private void send_event(String node, String msg) {
 		/*在main函数中调用该函数向node，发送消息msg*/
 		if (node.equals("i")) {
 			tPoolExecutor.execute(new Send(oos_i, msg, 0));
@@ -325,7 +314,7 @@ public class CNode{
 //		randomSeed = in.nextInt();
 		ip[0] = "192.168.1.167";
 		ip[1] = "192.168.1.146";
-		ip[2] = "192.168.1.235";
+		ip[2] = "192.168.1.244";
 		source_times = 8;
 		snapshot_times = 2;
 		randomSeed = 43;
