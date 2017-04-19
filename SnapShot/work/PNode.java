@@ -155,7 +155,7 @@ public class PNode {
 		System.out.println("test");
 		String[] src = msg.split("\\|");
 		String id = src[1];
-		if(node.equals("c")) {
+		if(src[0].equals("2")) {
 			// 原子操作
 			synchronized (lock_M) {
 				records.put(id, new SnapRecord(id));

@@ -9,11 +9,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class CNode{
-	ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
-	ReceiveThreadManager receive;
-//	HashMap<String, Snap> snap_all;
+	private ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+	private ReceiveThreadManager receive;
 	static String ip_i, ip_j, ip_k;
-	ObjectOutputStream oos_i, oos_j, oos_k;
+	private ObjectOutputStream oos_i, oos_j, oos_k;
 	private Event events[] = null;
 	CNodeSnapshot cNodeSnapshot[];
 
@@ -41,55 +40,55 @@ public class CNode{
 		this.events = new Event[source_times + snapshot_times ];
 		this.cNodeSnapshot = new CNodeSnapshot[snapshot_times];
 
-//		Random random = new Random(randomSeed);
-//		double R;
-//		double T;
-//		double source_times_rate = (double)source_times/(source_times + snapshot_times);
-//		long timeSum = 0;
-//		//产生所有事件
-//		char nodes[] = {'i','j','k'};
-//		for(int i = 0,j = 0, k = 0; k < source_times + snapshot_times; k++){
-//			R = random.nextDouble();
-//			T = -Math.log(R) * 5000;
-//			timeSum = timeSum + (long) T;
-//			Random random1 = new Random((long)T);
-//			if((R < source_times_rate || j >= snapshot_times) && i < source_times){
-//				// 资源转移事件
-//				char sendNode = nodes[random1.nextInt(3)];
-//				char recNode = 'i';
-//				int sourceNum = 10;
-//				if(sendNode == 'i'){
-//					char nodes1[] = {'j','k'};
-//					recNode = nodes1[random1.nextInt(2)];
-//				} else if(sendNode == 'j'){
-//					char nodes1[] = {'i','k'};
-//					recNode = nodes1[random1.nextInt(2)];
-//				} else if(sendNode == 'k'){
-//					char nodes1[] = {'i','j'};
-//					recNode = nodes1[random1.nextInt(2)];
-//				}
-//				this.events[k] = new Event(sendNode, recNode,10, timeSum);
-//				i++;
-//			} else if(j < snapshot_times){
-//				// 快照事件
-//				this.events[k] = new Event(String.valueOf(j),nodes[random1.nextInt(3)], 'c',timeSum);
-//				this.cNodeSnapshot[j] = new CNodeSnapshot(String.valueOf(j));
-//				j++;
-//			}
-//		}
-//		this.events[this.events.length - 1] = new Event(timeSum);
-        this.events[0] = new Event('k','i',63,0);
-        this.events[1] = new Event('k','i',7,1574);
-        this.events[2] = new Event('j','i',62,2930);
-        this.events[3] = new Event('k','j',14,15502);
-        this.events[4] = new Event("1",'i','c',19970);
-        this.cNodeSnapshot[0] = new CNodeSnapshot(String.valueOf(1));
-        this.events[5] = new Event('j','k',42,20701);
-        this.events[6] = new Event("2",'j','c',34482);
-        this.cNodeSnapshot[1] = new CNodeSnapshot(String.valueOf(2));
-        this.events[7] = new Event('j','i',7,35010);
-        this.events[8] = new Event('k','j',7,38325);
-        this.events[9] = new Event('i','j',233,41779);
+		Random random = new Random(randomSeed);
+		double R;
+		double T;
+		double source_times_rate = (double)source_times/(source_times + snapshot_times);
+		long timeSum = 0;
+		//产生所有事件
+		char nodes[] = {'i','j','k'};
+		for(int i = 0,j = 0, k = 0; k < source_times + snapshot_times; k++){
+			R = random.nextDouble();
+			T = -Math.log(R) * 5000;
+			timeSum = timeSum + (long) T;
+			Random random1 = new Random((long)T);
+			if((R < source_times_rate || j >= snapshot_times) && i < source_times){
+				// 资源转移事件
+				char sendNode = nodes[random1.nextInt(3)];
+				char recNode = 'i';
+				int sourceNum = 10;
+				if(sendNode == 'i'){
+					char nodes1[] = {'j','k'};
+					recNode = nodes1[random1.nextInt(2)];
+				} else if(sendNode == 'j'){
+					char nodes1[] = {'i','k'};
+					recNode = nodes1[random1.nextInt(2)];
+				} else if(sendNode == 'k'){
+					char nodes1[] = {'i','j'};
+					recNode = nodes1[random1.nextInt(2)];
+				}
+				this.events[k] = new Event(sendNode, recNode,10, timeSum);
+				i++;
+			} else if(j < snapshot_times){
+				// 快照事件
+				this.events[k] = new Event(String.valueOf(j),nodes[random1.nextInt(3)], 'c',timeSum);
+				this.cNodeSnapshot[j] = new CNodeSnapshot(String.valueOf(j));
+				j++;
+			}
+		}
+		this.events[this.events.length - 1] = new Event(timeSum);
+//        this.events[0] = new Event('k','i',63,0);
+//        this.events[1] = new Event('k','i',7,1574);
+//        this.events[2] = new Event('j','i',62,2930);
+//        this.events[3] = new Event('k','j',14,15502);
+//        this.events[4] = new Event("1",'i','c',19970);
+//        this.cNodeSnapshot[0] = new CNodeSnapshot(String.valueOf(1));
+//        this.events[5] = new Event('j','k',42,20701);
+//        this.events[6] = new Event("2",'j','c',34482);
+//        this.cNodeSnapshot[1] = new CNodeSnapshot(String.valueOf(2));
+//        this.events[7] = new Event('j','i',7,35010);
+//        this.events[8] = new Event('k','j',7,38325);
+//        this.events[9] = new Event('i','j',233,41779);
 
         this.setcNodeSnapshot();
 	}
@@ -109,7 +108,7 @@ public class CNode{
 		while (currentEvent != null) {
 		    currentTime = currentEvent.getWaitTime();
 //			System.out.println("time:" + currentEvent.getWaitTime() +
-//					"  sendId:" + currentEvent.getSendNode() +
+//					"  sendId:" + currentEvent.getSendNode() + "  action:" + currentEvent.getSourceAction() +
 //					"  code:" + currentEvent.getCode());
 			String code[] = currentEvent.getCode().split("\\|");
 
@@ -176,11 +175,11 @@ public class CNode{
 		}
 		this.events[this.events.length - 1] = new Event(currentTime + 1000);
 
-		for(CNodeSnapshot snapshot:this.cNodeSnapshot){
-			if(snapshot != null){
-				System.out.println(snapshot.getStandardSnapShot());
-			}
-		}
+//		for(CNodeSnapshot snapshot:this.cNodeSnapshot){
+//			if(snapshot != null){
+//				System.out.println(snapshot.getStandardSnapShot());
+//			}
+//		}
 	}
 	private void start_send() {
 		try {
@@ -192,7 +191,7 @@ public class CNode{
 		}
 		long lastTime = 0;
 		for(Event event:this.events){
-			fPrint.format(formatStr, event.getSendNode(),event.getCode());
+//			fPrint.format(formatStr, event.getSendNode(),event.getCode());
 		    try {
 				Thread.sleep(event.getWaitTime() - lastTime);
                 lastTime = event.getWaitTime();
@@ -208,7 +207,7 @@ public class CNode{
 			@Override
 			public void receive_handler(String node, String msg) {
 				String[] src = msg.split("\\|");
-				fPrint.format(formatStr," ",msg);
+//				fPrint.format(formatStr," ",msg);
 				for(CNodeSnapshot snapshot:cNodeSnapshot) {
 					if (snapshot.isSnapshotId(src[0])) {
 						if (snapshot.setRecSnapSource(node.charAt(0), msg)) {
@@ -220,52 +219,7 @@ public class CNode{
 			}
 		});
 	}
-	
-//	class Snap{
-//		/*
-//		 * 具体要使用那些你要考虑清楚，我只写一些我觉得需要的
-//		 *  不够你再加
-//		 */
-//		String snap_i, snap_j, snap_k;
-//		boolean record_i = false, record_j = false, record_k = false;
-//		public String getSnap_i() {
-//			return snap_i;
-//		}
-//		public void setSnap_i(String snap_i) {
-//			this.snap_i = snap_i;
-//		}
-//		public String getSnap_j() {
-//			return snap_j;
-//		}
-//		public void setSnap_j(String snap_j) {
-//			this.snap_j = snap_j;
-//		}
-//		public String getSnap_k() {
-//			return snap_k;
-//		}
-//		public void setSnap_k(String snap_k) {
-//			this.snap_k = snap_k;
-//		}
-//		public boolean isRecord_i() {
-//			return record_i;
-//		}
-//		public void setRecord_i(boolean record_i) {
-//			this.record_i = record_i;
-//		}
-//		public boolean isRecord_j() {
-//			return record_j;
-//		}
-//		public void setRecord_j(boolean record_j) {
-//			this.record_j = record_j;
-//		}
-//		public boolean isRecord_k() {
-//			return record_k;
-//		}
-//		public void setRecord_k(boolean record_k) {
-//			this.record_k = record_k;
-//		}
-//
-//	}
+
 	
 	private void send_event(String node, String msg) {
 		/*在main函数中调用该函数向node，发送消息msg*/
@@ -326,5 +280,14 @@ public class CNode{
 			return;
 		}
 		cNode.start_send();
+        while (cNode.tPoolExecutor.getActiveCount() != 0){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        cNode.tPoolExecutor.shutdown();
+        System.out.println("end");
 	}
 }
