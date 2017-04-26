@@ -12,6 +12,7 @@ public class CNode{
 	private ThreadPoolExecutor tPoolExecutor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
 	private ReceiveThreadManager receive;
 	static String ip_i, ip_j, ip_k;
+	private Socket socket_i, socket_j, socket_k;
 	private ObjectOutputStream oos_i, oos_j, oos_k;
 	private Event events[] = null;
 	CNodeSnapshot cNodeSnapshot[];
@@ -183,9 +184,12 @@ public class CNode{
 	}
 	private void start_send() {
 		try {
-			oos_i = new ObjectOutputStream(new Socket(ip_i, IConstant.portp).getOutputStream());
-			oos_j = new ObjectOutputStream(new Socket(ip_j, IConstant.portp).getOutputStream());
-			oos_k = new ObjectOutputStream(new Socket(ip_k, IConstant.portp).getOutputStream());
+			socket_i = new Socket(ip_i, IConstant.portp);
+			socket_j = new Socket(ip_j, IConstant.portp);
+			socket_k = new Socket(ip_k, IConstant.portp);
+			oos_i = new ObjectOutputStream(socket_i.getOutputStream());
+			oos_j = new ObjectOutputStream(socket_j.getOutputStream());
+			oos_k = new ObjectOutputStream(socket_k.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -266,11 +270,11 @@ public class CNode{
 //		snapshot_times = in.nextInt();
 //		System.out.print("随机数种子：");
 //		randomSeed = in.nextInt();
-		ip[0] = "223.3.116.65";
-		ip[1] = "223.3.109.54";
-		ip[2] = "211.65.36.138";
-		source_times = 15;
-		snapshot_times = 10;
+		ip[0] = "223.3.104.179";
+		ip[1] = "223.3.114.90";
+		ip[2] = "223.3.110.81";
+		source_times = 5;
+		snapshot_times = 1;
 		randomSeed = 43;
 		CNode cNode = new CNode(ip[0], ip[1], ip[2]);
         cNode.setEvents(source_times, snapshot_times, randomSeed);
@@ -280,14 +284,33 @@ public class CNode{
 			return;
 		}
 		cNode.start_send();
-        while (cNode.tPoolExecutor.getActiveCount() != 0){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        cNode.tPoolExecutor.shutdown();
+        cNode.end_all();
         System.out.println("end");
 	}
+
+	private void end_all() {
+		while (tPoolExecutor.getActiveCount() != 0){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+
+			socket_i.close();
+			socket_j.close();
+			socket_k.close();
+			oos_i.close();
+			oos_j.close();
+			oos_k.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		tPoolExecutor.shutdown();
+		receive.closeAllThread();
+
+	}
+
 }

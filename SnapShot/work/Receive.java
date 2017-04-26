@@ -1,4 +1,5 @@
 package work;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -48,13 +49,20 @@ public class Receive implements Runnable{
 					CallBackManager.getCallBackc().receive_handler(receive_node, msg);
 				else
 					CallBackManager.getCallBack().receive_handler(receive_node, msg);
-			} catch (EOFException) {
+			} catch (EOFException e) {
 				System.out.println("recieve end");
+				break;
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
         }
-    }
+		try {
+			socket.close();
+			ois.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
