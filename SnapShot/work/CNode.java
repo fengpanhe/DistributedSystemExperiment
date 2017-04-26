@@ -37,7 +37,7 @@ public class CNode{
 		return -1;
 	}
 	public void setEvents(int source_times, int snapshot_times, int randomSeed){
-		this.events = new Event[source_times + snapshot_times ];
+		this.events = new Event[source_times + snapshot_times + 1];
 		this.cNodeSnapshot = new CNodeSnapshot[snapshot_times];
 
 		Random random = new Random(randomSeed);
@@ -76,7 +76,7 @@ public class CNode{
 				j++;
 			}
 		}
-		this.events[this.events.length - 1] = new Event(timeSum);
+
 //        this.events[0] = new Event('k','i',63,0);
 //        this.events[1] = new Event('k','i',7,1574);
 //        this.events[2] = new Event('j','i',62,2930);
@@ -175,11 +175,11 @@ public class CNode{
 		}
 		this.events[this.events.length - 1] = new Event(currentTime + 1000);
 
-//		for(CNodeSnapshot snapshot:this.cNodeSnapshot){
-//			if(snapshot != null){
-//				System.out.println(snapshot.getStandardSnapShot());
-//			}
-//		}
+		for(CNodeSnapshot snapshot:this.cNodeSnapshot){
+			if(snapshot != null){
+				System.out.println(snapshot.getStandardSnapShot());
+			}
+		}
 	}
 	private void start_send() {
 		try {
@@ -266,11 +266,11 @@ public class CNode{
 //		snapshot_times = in.nextInt();
 //		System.out.print("随机数种子：");
 //		randomSeed = in.nextInt();
-		ip[0] = "192.168.1.167";
-		ip[1] = "192.168.1.146";
-		ip[2] = "192.168.1.244";
-		source_times = 8;
-		snapshot_times = 2;
+		ip[0] = "223.3.116.65";
+		ip[1] = "223.3.109.54";
+		ip[2] = "211.65.36.138";
+		source_times = 15;
+		snapshot_times = 10;
 		randomSeed = 43;
 		CNode cNode = new CNode(ip[0], ip[1], ip[2]);
         cNode.setEvents(source_times, snapshot_times, randomSeed);
