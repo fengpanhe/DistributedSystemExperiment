@@ -22,6 +22,7 @@ public class PNode {
 	static String ipc, ip1, ip2;// ipc为控制节点的ip，ip1为第一个节点的IP地址，ip2同上
 	private Boolean lock_M = new Boolean(false), lock_snapnum = new Boolean(false);//锁
 	private ReceiveThreadManager receive;// 接受线程管理
+	Socket socket_c, socket_1, socket_2;
 	private ObjectOutputStream oos_c, oos_1, oos_2;
 	private ConcurrentHashMap<String, SnapRecord> records = new ConcurrentHashMap<>();
 //	private HashMap<String, SnapRecord> records = new HashMap<>();// 记录
@@ -46,9 +47,12 @@ public class PNode {
 	@SuppressWarnings("resource")
 	private void start_send() {
 		try {
-			oos_c = new ObjectOutputStream(new Socket(ipc, IConstant.portc).getOutputStream());
-			oos_1 = new ObjectOutputStream(new Socket(ip1, IConstant.portp).getOutputStream());
-			oos_2 = new ObjectOutputStream(new Socket(ip2, IConstant.portp).getOutputStream());
+			socket_c = new Socket(ipc, IConstant.portc);
+			socket_1 = new Socket(ip1, IConstant.portp);
+			socket_2 = new Socket(ip2, IConstant.portp);
+			oos_c = new ObjectOutputStream(socket_c.getOutputStream());
+			oos_1 = new ObjectOutputStream(socket_1.getOutputStream());
+			oos_2 = new ObjectOutputStream(socket_2.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -121,6 +125,16 @@ public class PNode {
 
 	private void handle_end() {
 		while (tPoolExecutor.getActiveCount() != 0);
+		try {
+			socket_1.close();
+			socket_2.close();
+			socket_c.close();
+			oos_1.close();
+			oos_2.close();
+			oos_c.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		tPoolExecutor.shutdown();
 		receive.closeAllThread();
 	}

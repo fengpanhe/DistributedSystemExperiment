@@ -48,6 +48,8 @@ public class Receive implements Runnable{
 					CallBackManager.getCallBackc().receive_handler(receive_node, msg);
 				else
 					CallBackManager.getCallBack().receive_handler(receive_node, msg);
+			} catch (EOFException) {
+				System.out.println("recieve end");
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
